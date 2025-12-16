@@ -2,6 +2,7 @@ import joblib
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
 
 from .data_preprocessing import (
     load_data,
@@ -10,9 +11,20 @@ from .data_preprocessing import (
     train_test_data,
 )
 
-
 DATA_PATH = "projects/01_machine_learning/data/raw/WA_Fn-UseC_-Telco-Customer-Churn.csv"
 
+PARAM_GRIDS = {
+    "logistic_regression": {
+        "model__C": [0.01, 0.1, 1, 10],
+        "model__penalty": ["l2"],
+        "model__solver": ["lbfgs"],
+    },
+    "random_forest": {
+        "model__n_estimators": [200, 300],
+        "model__max_depth": [None, 10, 20],
+        "model__min_samples_split": [2, 5],
+    },
+}
 
 MODELS = {
     "logistic_regression": LogisticRegression(
@@ -20,7 +32,6 @@ MODELS = {
         class_weight="balanced",
     ),
     "random_forest": RandomForestClassifier(
-        n_estimators=300,
         random_state=42,
         n_jobs=-1,
         class_weight="balanced",
@@ -28,23 +39,13 @@ MODELS = {
 }
 
 
-
 def train_models():
-    """
-    Train machine learning models and save them to disk.
-    """
-
-    # 1. Load and prepare data
     df = load_data(DATA_PATH)
     X, y = split_features_target(df)
 
-    # 2. Train-test split
     X_train, X_test, y_train, y_test = train_test_data(X, y)
-
-    # 3. Build preprocessing pipeline
     preprocessor = build_preprocessor(X)
 
-    # 4. Train models
     for name, model in MODELS.items():
         pipeline = Pipeline(
             steps=[
@@ -53,15 +54,27 @@ def train_models():
             ]
         )
 
-        pipeline.fit(X_train, y_train)
-
-        # 5. Save trained model
-        joblib.dump(
+        grid_search = GridSearchCV(
             pipeline,
+            PARAM_GRIDS[name],
+            cv=5,
+            scoring="roc_auc",
+            n_jobs=-1,
+            verbose=1,
+        )
+
+        grid_search.fit(X_train, y_train)
+
+        print(f"\nBest parameters for {name}:")
+        print(grid_search.best_params_)
+        print("Best CV ROC-AUC:", grid_search.best_score_)
+
+        joblib.dump(
+            grid_search.best_estimator_,
             f"projects/01_machine_learning/models/{name}.joblib",
         )
 
-        print(f"Model '{name}' trained and saved successfully.")
+        print(f"Best {name} model saved.")
 
 
 if __name__ == "__main__":
