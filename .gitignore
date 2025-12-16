@@ -1,0 +1,16 @@
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / Editor
+.vscode/
+.DS_Store
+
+# Datasets
+projects/01_machine_learning/data/raw/*.csv
