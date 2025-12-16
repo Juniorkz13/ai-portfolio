@@ -8,15 +8,18 @@ class TextDataset(Dataset):
     Custom PyTorch Dataset for text classification.
     """
 
-    def __init__(self, texts, labels):
-        self.texts = texts
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
         self.labels = labels
 
     def __len__(self):
-        return len(self.texts)
+        return len(self.labels)
 
     def __getitem__(self, idx):
-        return self.texts[idx], self.labels[idx]
+        item = {key: val[idx] for key, val in self.encodings.items()}
+        item["labels"] = self.labels[idx]
+        return item
+
 
 
 def prepare_datasets(
