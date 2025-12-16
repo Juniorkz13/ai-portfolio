@@ -112,30 +112,36 @@ From the root of the repository, run:
 ```bash
 python -m projects.01_machine_learning.src.train
 python -m projects.01_machine_learning.src.evaluate
-
+```
 
 ## 📊 Results and Conclusion
+
 The tuned models demonstrated strong predictive performance, especially after:
-- Handling class imbalance
-- Applying hyperparameter tuning
-- Optimizing decision thresholds
+
+-   Handling class imbalance
+-   Applying hyperparameter tuning
+-   Optimizing decision thresholds
 
 This project shows that classical machine learning models, when properly designed and evaluated, can effectively solve real-world business problems such as customer churn prediction.
 
 ---
 
 ## 🚀 Next Steps
+
 Possible future improvements include:
-- Gradient boosting models (XGBoost / LightGBM)
-- Cost-sensitive evaluation
-- Model deployment as an API or dashboard
+
+-   Gradient boosting models (XGBoost / LightGBM)
+-   Cost-sensitive evaluation
+-   Model deployment as an API or dashboard
 
 ---
 
 ## 👤 Author
+
 José Geraldo do Espírito Santo Júnior
 AI and Machine Learning Portfolio
 Location: Brazil
 
+```
 
 ```
