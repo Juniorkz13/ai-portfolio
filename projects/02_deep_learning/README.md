@@ -1,26 +1,23 @@
-# SMS Spam Classification — Deep Learning with PyTorch
+# SMS Spam Classification — Deep Learning with PyTorch and Transformers
 
 ## 📌 Project Overview
 
-This project focuses on building a **Deep Learning model for text classification** using **PyTorch**.
-The objective is to classify SMS messages as **Spam** or **Ham**, applying an end-to-end NLP pipeline
-from exploratory data analysis to model training and evaluation.
+This project presents an end-to-end **Natural Language Processing (NLP)** pipeline for
+SMS spam classification, evolving from classical neural baselines to **fine-tuning a
+state-of-the-art Transformer model (BERT)**.
 
-The project demonstrates practical usage of neural networks for Natural Language Processing (NLP)
-with a production-oriented structure.
+The goal is to demonstrate practical Deep Learning skills using **PyTorch** and
+**Hugging Face Transformers**, following industry-standard workflows.
 
 ---
 
 ## 💼 Business Problem
 
-Spam messages represent a significant challenge for communication platforms, impacting user experience
-and potentially causing financial loss or security issues.
+Spam messages negatively impact user experience, increase security risks, and reduce
+trust in communication platforms.
 
-Automatically detecting spam messages allows companies to:
-
--   Improve user experience
--   Reduce fraud and phishing risks
--   Optimize moderation and filtering systems
+An effective spam detection system must prioritize **recall for spam messages**, ensuring
+that malicious or unwanted content is detected as early as possible.
 
 ---
 
@@ -30,189 +27,150 @@ Automatically detecting spam messages allows companies to:
 -   **Source:** UCI Machine Learning Repository
 -   **Task:** Binary text classification (Spam vs Ham)
 
-The dataset consists of short text messages and presents a moderate class imbalance,
-making it suitable for discussing evaluation metrics beyond accuracy.
+The dataset contains short text messages with a **class imbalance**, making it suitable
+for evaluating models using metrics beyond accuracy.
 
 ---
 
 ## 🔍 Exploratory Data Analysis (EDA)
 
-Key insights from EDA include:
+Key insights obtained during EDA:
 
--   The dataset is imbalanced, with fewer spam messages.
--   Spam messages tend to be longer than ham messages.
--   Text length distribution helps guide model design decisions.
-
-EDA provided essential insights for preprocessing and modeling strategy.
+-   Spam messages are less frequent than ham messages.
+-   Spam messages tend to be longer and contain specific patterns.
+-   Class imbalance motivates the use of recall and F1-score as primary metrics.
 
 ---
 
 ## 🛠️ Data Preprocessing
 
-The preprocessing pipeline includes:
-
--   Tokenization using a pretrained BERT tokenizer
--   Truncation and padding to a fixed maximum sequence length
+-   Tokenization using a pretrained **BERT tokenizer**
+-   Padding and truncation to a fixed sequence length
 -   Label encoding (ham = 0, spam = 1)
-
-A custom **PyTorch Dataset** was implemented to ensure compatibility with DataLoader
-and efficient batch processing.
+-   Custom PyTorch Dataset implementations for efficient batching
 
 ---
 
-## 🤖 Model Architecture
+## 🧠 Model Evolution: Baseline → LSTM → BERT
 
-The neural network architecture consists of:
+The project was developed incrementally to reflect real-world ML workflows.
+
+### Baseline Model
 
 -   Embedding layer
 -   Global average pooling
--   Fully connected hidden layer with ReLU activation
--   Dropout for regularization
--   Output layer for binary classification
+-   Fully connected layers
 
-This simple yet effective architecture allows clear interpretation
-and serves as a strong baseline for NLP tasks.
+This model served as a fast, interpretable baseline.
+
+### LSTM-Based Model
+
+-   Embedding layer
+-   LSTM to capture word order and sequential dependencies
+-   Fully connected classification head
+
+The LSTM improved representation of sentence structure and recall for spam messages.
+
+### BERT Fine-Tuned Model
+
+-   Pretrained **BERT (bert-base-uncased)**
+-   Fine-tuning of all layers on the spam classification task
+-   Transformer-based contextual embeddings
+
+This approach achieved the strongest overall performance and reflects
+modern NLP practices used in production systems.
+
+---
+
+## 📊 Model Comparison — Conceptual
+
+| Aspect               | Baseline  | LSTM         | BERT Fine-Tuned |
+| -------------------- | --------- | ------------ | --------------- |
+| Architecture         | Simple NN | Recurrent NN | Transformer     |
+| Sequence Awareness   | ❌ No     | ✅ Yes       | ✅ Yes (Strong) |
+| Model Complexity     | Low       | Medium       | High            |
+| Training Time        | Fast      | Moderate     | Slower          |
+| Context Modeling     | Limited   | Improved     | Excellent       |
+| Production Readiness | Baseline  | Intermediate | High            |
+
+---
+
+## 📈 Quantitative Results (Validation Set)
+
+| Metric (Spam Class) | Baseline | LSTM     | BERT          |
+| ------------------- | -------- | -------- | ------------- |
+| Accuracy            | ~0.86    | ~0.87    | **Highest**   |
+| Precision           | Moderate | High     | **Very High** |
+| Recall              | Moderate | Improved | **Best**      |
+| F1-score            | Baseline | Improved | **Best**      |
+
+Although overall accuracy differences are small, **BERT significantly improves recall
+and F1-score for the spam class**, which is the most relevant metric for the business goal.
 
 ---
 
 ## 🔧 Training Strategy
 
 -   Framework: PyTorch
+-   Optimizer:
+    -   Adam (Baseline / LSTM)
+    -   AdamW (BERT fine-tuning)
 -   Loss function: CrossEntropyLoss
--   Optimizer: Adam
--   Batch size: 32
--   Training epochs: 5
--   Device support: CPU / GPU (if available)
+-   Device support: CPU and **GPU (CUDA enabled)**
 
-A manual training loop was implemented, providing full control
-over forward pass, backpropagation, and validation.
-
----
-
-## 📈 Model Evaluation
-
-The model was evaluated using:
-
--   Precision, Recall, and F1-score
--   Confusion Matrix
-
-Special attention was given to **Recall for the Spam class**, aiming to reduce
-false negatives and improve practical effectiveness.
-
----
-
-## 🧪 Technologies Used
-
--   Python
--   PyTorch
--   Hugging Face Transformers (Tokenizer)
--   Pandas, NumPy
--   Scikit-learn
--   Matplotlib, Seaborn
--   TQDM
+Manual training loops were implemented for full control over optimization and evaluation.
 
 ---
 
 ## ▶️ How to Run the Project
 
-From the root of the repository, run:
+From the root of the repository:
 
 ```bash
+# Baseline / LSTM
 python -m projects.02_deep_learning.src.train
 python -m projects.02_deep_learning.src.evaluate
+
+# BERT Fine-Tuning
+python -m projects.02_deep_learning.src.train_bert
+python -m projects.02_deep_learning.src.evaluate_bert
 ```
+
+Dataset must be placed at:
+projects/02_deep_learning/data/raw/SMSSpamCollection
 
 ---
 
-## 📊 Results and Conclusion
+## 📌 Results and Conclusion
 
-The trained Deep Learning model achieved solid performance in the SMS spam classification task,
-demonstrating that even a lightweight neural architecture can effectively handle short-text NLP problems.
+This project demonstrates a clear progression in Natural Language Processing modeling,
+starting from a simple neural baseline and advancing to a fine-tuned Transformer model.
 
-Key outcomes of the project include:
+The experiments show that:
 
--   Consistent reduction in training loss across epochs.
--   Balanced precision and recall, with particular focus on recall for the spam class.
--   Clear separation between spam and ham messages, as shown by the confusion matrix.
+-   Baseline neural models provide strong and interpretable reference performance.
+-   LSTM-based architectures improve the modeling of sequential dependencies in text.
+-   Fine-tuning a pretrained BERT model delivers the best overall results, particularly
+    in terms of **recall and F1-score for the spam class**, which are critical metrics
+    for real-world spam detection systems.
 
-This project highlights the importance of:
+Although overall accuracy differences between models are relatively small, more advanced
+architectures significantly reduce false negatives, aligning model performance with
+business objectives.
 
--   Proper dataset handling when working with PyTorch and DataLoader.
--   Building custom datasets compatible with tokenized inputs.
--   Implementing manual training and evaluation loops for full control over the learning process.
-
-Overall, the solution provides a strong and interpretable baseline for text classification tasks
-and can be easily extended to more advanced architectures such as LSTM, GRU, or Transformer-based models.
+This progressive approach reflects real-world machine learning workflows and highlights
+strong practical understanding of Deep Learning, model selection, and evaluation strategies.
 
 ---
 
 ## 🚀 Next Steps
 
-Possible future improvements for this project include:
+Potential future improvements include:
 
--   Replacing the current architecture with recurrent models such as LSTM or GRU.
--   Fine-tuning a pretrained Transformer model (e.g., BERT) for improved performance.
--   Applying hyperparameter optimization techniques.
--   Implementing cost-sensitive learning to further reduce false negatives.
+-   Hyperparameter optimization for BERT fine-tuning.
+-   Experimenting with lighter Transformer architectures for faster inference.
+-   Threshold tuning to further optimize recall-sensitive applications.
 -   Deploying the model as an inference API or integrating it into a production pipeline.
-
----
-
-## 🧠 Model Evolution: Baseline to LSTM
-
-The project was developed incrementally, starting with a simple baseline model and evolving
-towards a more expressive neural architecture.
-
-### Baseline Model
-
-The initial model was based on:
-
--   An embedding layer
--   Global average pooling
--   Fully connected layers for classification
-
-This architecture provided a strong and interpretable baseline, allowing fast training
-and clear analysis of model behavior.
-
-### LSTM-Based Model
-
-To better capture sequential patterns and word order in text data, the baseline model
-was replaced by an LSTM-based architecture.
-
-Key improvements introduced by the LSTM model:
-
--   Ability to model temporal dependencies between words
--   Better representation of sentence structure
--   Improved recall for the spam class in comparison to the baseline
-
-The LSTM model processes token embeddings sequentially and uses the final hidden state
-for classification, resulting in a more expressive and robust NLP model.
-
-This progressive approach demonstrates practical understanding of model selection,
-architecture evolution, and experimental comparison in Deep Learning projects.
-
-This evolution highlights a common industry practice: starting with a simple baseline
-and gradually increasing model complexity based on observed performance and problem requirements.
-
----
-
-## 📊 Model Comparison — Baseline vs LSTM
-
-| Aspect                   | Baseline Model                         | LSTM Model                    |
-| ------------------------ | -------------------------------------- | ----------------------------- |
-| Architecture             | Embedding + Average Pooling + FC       | Embedding + LSTM + FC         |
-| Sequence Awareness       | ❌ No (order-agnostic)                 | ✅ Yes (captures word order)  |
-| Model Complexity         | Low                                    | Medium                        |
-| Training Time            | Faster                                 | Slower                        |
-| Ability to Model Context | Limited                                | Improved                      |
-| Recall (Spam Class)      | Baseline reference                     | Improved compared to baseline |
-| Interpretability         | High                                   | Medium                        |
-| Use Case                 | Strong baseline / fast experimentation | More expressive NLP modeling  |
-
-The comparison highlights the trade-off between simplicity and expressiveness.
-While the baseline model offers fast training and easy interpretability, the LSTM-based
-architecture better captures sequential dependencies in text, leading to improved
-performance on the spam classification task.
 
 ---
 
