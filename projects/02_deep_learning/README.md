@@ -158,6 +158,64 @@ Possible future improvements for this project include:
 
 ---
 
+## 🧠 Model Evolution: Baseline to LSTM
+
+The project was developed incrementally, starting with a simple baseline model and evolving
+towards a more expressive neural architecture.
+
+### Baseline Model
+
+The initial model was based on:
+
+-   An embedding layer
+-   Global average pooling
+-   Fully connected layers for classification
+
+This architecture provided a strong and interpretable baseline, allowing fast training
+and clear analysis of model behavior.
+
+### LSTM-Based Model
+
+To better capture sequential patterns and word order in text data, the baseline model
+was replaced by an LSTM-based architecture.
+
+Key improvements introduced by the LSTM model:
+
+-   Ability to model temporal dependencies between words
+-   Better representation of sentence structure
+-   Improved recall for the spam class in comparison to the baseline
+
+The LSTM model processes token embeddings sequentially and uses the final hidden state
+for classification, resulting in a more expressive and robust NLP model.
+
+This progressive approach demonstrates practical understanding of model selection,
+architecture evolution, and experimental comparison in Deep Learning projects.
+
+This evolution highlights a common industry practice: starting with a simple baseline
+and gradually increasing model complexity based on observed performance and problem requirements.
+
+---
+
+## 📊 Model Comparison — Baseline vs LSTM
+
+| Aspect                   | Baseline Model                         | LSTM Model                    |
+| ------------------------ | -------------------------------------- | ----------------------------- |
+| Architecture             | Embedding + Average Pooling + FC       | Embedding + LSTM + FC         |
+| Sequence Awareness       | ❌ No (order-agnostic)                 | ✅ Yes (captures word order)  |
+| Model Complexity         | Low                                    | Medium                        |
+| Training Time            | Faster                                 | Slower                        |
+| Ability to Model Context | Limited                                | Improved                      |
+| Recall (Spam Class)      | Baseline reference                     | Improved compared to baseline |
+| Interpretability         | High                                   | Medium                        |
+| Use Case                 | Strong baseline / fast experimentation | More expressive NLP modeling  |
+
+The comparison highlights the trade-off between simplicity and expressiveness.
+While the baseline model offers fast training and easy interpretability, the LSTM-based
+architecture better captures sequential dependencies in text, leading to improved
+performance on the spam classification task.
+
+---
+
 ## 👤 Author
 
 José Geraldo do Espírito Santo Júnior  
