@@ -1,10 +1,12 @@
 import joblib
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import (
     classification_report,
     roc_auc_score,
     roc_curve,
     ConfusionMatrixDisplay,
+    recall_score
 )
 
 from .data_preprocessing import (
@@ -34,9 +36,15 @@ def evaluate():
 
         preds = model.predict(X_test)
         probs = model.predict_proba(X_test)[:, 1]
+        threshold = 0.4
+        adjusted_preds = (probs >= threshold).astype(int)
 
+        print(f"\nAdjusted threshold: {threshold}")
+        print(classification_report(y_test, adjusted_preds))
         print(f"\nModel: {model_name}")
         print(classification_report(y_test, preds))
+        recall = recall_score(y_test, preds)
+        print("Recall (Churn):", recall)
         print("ROC-AUC:", roc_auc_score(y_test, probs))
 
         # Confusion Matrix
