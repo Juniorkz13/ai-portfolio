@@ -11,7 +11,8 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 
 from .dataset import prepare_datasets
-from .model import TextClassifier
+from .model_lstm import LSTMTextClassifier
+
 
 
 # =====================
@@ -62,7 +63,12 @@ def evaluate():
     )
 
     vocab_size = tokenizer.vocab_size
-    model = TextClassifier(vocab_size=vocab_size)
+    model = LSTMTextClassifier(
+    vocab_size=vocab_size,
+    embedding_dim=128,
+    hidden_dim=128,
+)
+
     model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
     model.to(DEVICE)
     model.eval()

@@ -6,7 +6,8 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 
 from .dataset import prepare_datasets
-from .model import TextClassifier
+from .model_lstm import LSTMTextClassifier
+
 
 
 # =====================
@@ -16,7 +17,7 @@ DATA_PATH = "projects/02_deep_learning/data/raw/SMSSpamCollection"
 MODEL_OUTPUT_PATH = "projects/02_deep_learning/models/text_classifier.pt"
 
 BATCH_SIZE = 32
-EPOCHS = 5
+EPOCHS = 8
 LEARNING_RATE = 1e-3
 MAX_LENGTH = 100
 
@@ -66,7 +67,12 @@ def train():
 
     vocab_size = tokenizer.vocab_size
 
-    model = TextClassifier(vocab_size=vocab_size)
+    model = LSTMTextClassifier(
+    vocab_size=vocab_size,
+    embedding_dim=128,
+    hidden_dim=128,
+)
+
     model.to(DEVICE)
 
     criterion = nn.CrossEntropyLoss()
