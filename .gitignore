@@ -14,3 +14,17 @@ __pycache__/
 
 # Datasets
 projects/01_machine_learning/data/raw/*.csv
+
+# Environments
+.venv/
+__pycache__/
+*.pyc
+
+# Data and models
+data/
+models/
+*/data/
+*/models/
+
+# Jupyter
+.ipynb_checkpoints/
