@@ -85,10 +85,10 @@ def train():
         progress_bar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{EPOCHS}")
 
         for batch in progress_bar:
-            inputs, labels = batch
 
-            input_ids = inputs["input_ids"].to(DEVICE)
-            labels = labels.to(DEVICE)
+            input_ids = batch["input_ids"].to(DEVICE)
+            labels = batch["labels"].to(DEVICE)
+
 
             optimizer.zero_grad()
 
@@ -113,9 +113,9 @@ def train():
 
         with torch.no_grad():
             for batch in val_loader:
-                inputs, labels = batch
-                input_ids = inputs["input_ids"].to(DEVICE)
-                labels = labels.to(DEVICE)
+                input_ids = batch["input_ids"].to(DEVICE)
+                labels = batch["labels"].to(DEVICE)
+
 
                 outputs = model(input_ids)
                 preds = torch.argmax(outputs, dim=1)
