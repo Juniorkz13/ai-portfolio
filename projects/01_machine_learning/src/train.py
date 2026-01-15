@@ -69,12 +69,12 @@ def train_models():
         print(grid_search.best_params_)
         print("Best CV ROC-AUC:", grid_search.best_score_)
 
-        joblib.dump(
-            grid_search.best_estimator_,
-            f"projects/01_machine_learning/models/{name}.joblib",
-        )
-
-        print(f"Best {name} model saved.")
+        if name == "logistic_regression":
+            joblib.dump(
+                grid_search.best_estimator_,
+                "projects/01_machine_learning/models/churn_pipeline.joblib",
+            )
+            print("Production churn pipeline saved.")
 
 
 if __name__ == "__main__":
