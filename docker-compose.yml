@@ -1,0 +1,9 @@
+services:
+  churn-api:
+    build:
+      context: projects/mlops_deploy
+      dockerfile: Dockerfile
+    image: ai-portfolio-churn-api
+    container_name: churn_api
+    ports:
+      - "8000:8000"

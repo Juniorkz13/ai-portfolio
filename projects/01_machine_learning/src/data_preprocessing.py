@@ -19,14 +19,30 @@ def load_data(path: str) -> pd.DataFrame:
     return df
 
 
-def split_features_target(df: pd.DataFrame, target: str = "Churn"):
-    """
-    Split dataset into features (X) and target (y).
-    """
-    X = df.drop(columns=["customerID", target])
-    y = df[target].map({"Yes": 1, "No": 0})
+def split_features_target(df):
+    df = df.rename(columns={
+        "MonthlyCharges": "monthly_charges",
+        "TotalCharges": "total_charges",
+        "Contract": "contract_type",
+        "PaymentMethod": "payment_method",
+        "InternetService": "internet_service",
+    })
+
+    FEATURES = [
+        "tenure",
+        "monthly_charges",
+        "total_charges",
+        "contract_type",
+        "payment_method",
+        "internet_service",
+    ]
+
+    X = df[FEATURES]
+    y = df["Churn"].map({"Yes": 1, "No": 0})
 
     return X, y
+
+
 
 
 def build_preprocessor(X: pd.DataFrame) -> ColumnTransformer:

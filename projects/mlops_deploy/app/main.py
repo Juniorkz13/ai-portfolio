@@ -1,33 +1,39 @@
 from fastapi import FastAPI
-from projects.mlops_deploy.app.schemas import ChurnInput, PredictionOutput
-from projects.mlops_deploy.app.model_loader import load_model
+import pandas as pd
+import joblib
 
-import numpy as np
+from app.schemas import ChurnInput, PredictionOutput
 
-app = FastAPI(title="Customer Churn Prediction API")
+app = FastAPI(
+    title="Customer Churn Prediction API",
+    version="1.0.0",
+)
 
-model = load_model()
+MODEL_PATH = "models/churn_pipeline_v1.joblib"
+pipeline = joblib.load(MODEL_PATH)
+
+EXPECTED_FEATURES = [
+    "tenure",
+    "monthly_charges",
+    "total_charges",
+    "contract_type",
+    "payment_method",
+    "internet_service",
+]
 
 @app.get("/")
-def root():
-    return {
-        "message": "Customer Churn Prediction API is running",
-        "docs": "http://127.0.0.1:8000/docs"
-    }
+def health_check():
+    return {"status": "API is running"}
 
+@app.post("/v1/predict", response_model=PredictionOutput)
+def predict_v1(input: ChurnInput):
+    df = pd.DataFrame([input.dict()])
+    df = df[EXPECTED_FEATURES]
 
-@app.post("/predict", response_model=PredictionOutput)
-def predict_churn(data: ChurnInput):
-    features = np.array([[
-        data.tenure,
-        data.monthly_charges,
-        data.total_charges,
-    ]])
-
-    probability = model.predict_proba(features)[0][1]
+    probability = pipeline.predict_proba(df)[0][1]
     prediction = int(probability >= 0.5)
 
     return PredictionOutput(
-        churn_probability=probability,
+        churn_probability=round(float(probability), 4),
         churn_prediction=prediction,
     )
