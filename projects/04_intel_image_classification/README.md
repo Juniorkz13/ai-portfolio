@@ -176,3 +176,9 @@ This project demonstrates:
 - Honest and interpretable evaluation
 
 It reflects the workflow of a **Machine Learning / Computer Vision Engineer**, not a tutorial-level experiment.
+
+👤 Author
+
+José Geraldo do Espírito Santo Júnior
+AI & Machine Learning Portfolio
+Location: Brazil
