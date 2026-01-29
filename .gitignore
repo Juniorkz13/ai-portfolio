@@ -40,7 +40,7 @@ logs/
 */models/
 */checkpoints/
 */outputs/
-*/projects/04_intel_image_classification/experiments/predictions/
+*projects/04_intel_image_classification/experiments/predictions/
 
 
 
