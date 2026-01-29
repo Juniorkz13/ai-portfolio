@@ -1,16 +1,22 @@
-# 🖼️ Image Classification with Transfer Learning using PyTorch
+# 🖼️ Image Classification with Transfer Learning (PyTorch)
 
-## 📌 Project Overview
+## 📌 Overview
 
-This project implements a **complete Computer Vision pipeline** for **natural scene image classification** using **Deep Learning and Transfer Learning** with PyTorch.
+This project presents a **production-style Computer Vision pipeline** for **natural scene image classification**, built with **PyTorch** and **Transfer Learning**.
 
-The objective is to demonstrate **end-to-end ML engineering skills**, including data preparation, GPU training, evaluation with proper metrics, and clean, modular code organization suitable for real-world applications.
+The focus is not only on model accuracy, but on demonstrating **ML engineering best practices**, including:
+- robust dataset handling  
+- GPU-accelerated training  
+- modular and reusable code  
+- honest evaluation with real-world metrics  
+
+This repository reflects the workflow of a **Machine Learning / Computer Vision Engineer**, not a tutorial-level experiment.
 
 ---
 
-## 🧠 Problem Description
+## 🧠 Problem Statement
 
-Given an image of a natural scene, the model predicts one of the following classes:
+Given an input image of a natural environment, the model predicts one of the following categories:
 
 - buildings  
 - forest  
@@ -19,7 +25,7 @@ Given an image of a natural scene, the model predicts one of the following class
 - sea  
 - street  
 
-This is a **multi-class image classification** problem with visually similar categories (e.g., glacier vs mountain), which makes it a strong benchmark for generalization.
+This is a **multi-class image classification** problem involving **visually similar classes** (e.g. *glacier vs mountain*), making it a strong benchmark for evaluating model generalization.
 
 ---
 
@@ -28,7 +34,8 @@ This is a **multi-class image classification** problem with visually similar cat
 **Dataset:** Intel Image Classification (Natural Scenes)  
 **Source:** Kaggle
 
-### Structure
+### Dataset Structure
+
 ```
 data/raw/
 ├── seg_train/
@@ -48,9 +55,11 @@ data/raw/
 └── seg_pred/
 ```
 
-- `seg_train`: training images  
-- `seg_test`: labeled test images  
-- `seg_pred`: unlabeled images for inference  
+- **seg_train**: training images  
+- **seg_test**: labeled test images  
+- **seg_pred**: unlabeled images for inference and visualization  
+
+The dataset contains real photographs with variations in lighting, scale, and perspective.
 
 ---
 
@@ -59,7 +68,7 @@ data/raw/
 ```
 project_04_intel_image_classification/
 ├── data/
-│   └── raw/
+│   └── raw/                 # ignored by git
 ├── experiments/
 │   └── best_model.pth
 ├── src/
@@ -71,7 +80,7 @@ project_04_intel_image_classification/
 └── README.md
 ```
 
-The project is organized to ensure **reproducibility, readability, and scalability**.
+The structure is designed for **clarity, reproducibility, and scalability**, following common ML engineering standards.
 
 ---
 
@@ -85,39 +94,46 @@ The project is organized to ensure **reproducibility, readability, and scalabili
   - Random rotation
   - Color jitter
 
+This setup is fully compatible with **ImageNet-pretrained CNN architectures**.
+
 ---
 
 ## 🧠 Model Architecture
 
-- Backbone: **ResNet-50** (pretrained on ImageNet)
-- Strategy: **Transfer Learning**
-  - Backbone frozen
-  - Custom classifier head
+- **Backbone:** ResNet-50 (pretrained on ImageNet)
+- **Approach:** Transfer Learning
+  - Backbone layers frozen
+  - Custom classification head added
 
-### Classifier Head
-- Linear (2048 → 256)
-- ReLU
+### Classification Head
+
+- Linear layer (2048 → 256)
+- ReLU activation
 - Dropout (0.5)
-- Linear (256 → 6)
+- Linear layer (256 → 6)
+
+This design enables fast convergence and strong generalization with limited training epochs.
 
 ---
 
-## ⚙️ Training Setup
+## ⚙️ Training Configuration
 
-- Framework: PyTorch
-- Device: GPU (NVIDIA RTX 2060)
-- Loss: CrossEntropyLoss
-- Optimizer: Adam
-- Learning rate: 1e-3
-- Scheduler: ReduceLROnPlateau
-- Epochs: 10
-- Checkpointing: best model saved by validation loss
+- Framework: PyTorch  
+- Device: GPU (NVIDIA RTX 2060)  
+- Loss Function: CrossEntropyLoss  
+- Optimizer: Adam  
+- Learning Rate: 1e-3  
+- Scheduler: ReduceLROnPlateau  
+- Epochs: 10  
+- Checkpointing: best model saved based on validation loss  
+
+Training and validation loops are fully separated and GPU-aware.
 
 ---
 
 ## 📊 Evaluation Results
 
-Evaluation performed on the **seg_test** dataset.
+Evaluation was performed on the **seg_test** dataset.
 
 | Class      | Precision | Recall | F1-score |
 |-----------|-----------|--------|---------|
@@ -130,55 +146,62 @@ Evaluation performed on the **seg_test** dataset.
 
 **Overall Accuracy:** **91%**
 
-### Observations
-- Strong performance on visually distinctive classes.
-- Most confusion occurs between *glacier* and *mountain*, which is expected.
-- Errors are semantically reasonable, indicating good generalization.
+### Key Observations
+
+- Strong performance on visually distinctive classes (*forest*, *sea*)
+- Most confusion occurs between **glacier ↔ mountain**, which is expected
+- Errors are semantically reasonable, indicating good generalization
 
 ---
 
 ## ▶️ How to Run
 
-Activate environment:
+Activate the environment:
+
 ```bash
 conda activate ai
 ```
 
 Train the model:
+
 ```bash
 python src/train.py
 ```
 
-Evaluate on test set:
+Evaluate on the test set:
+
 ```bash
 python src/evaluate.py
 ```
 
 ---
 
-## 🚀 Future Improvements
+## 🚀 Possible Improvements
 
-- Fine-tuning deeper layers of ResNet-50
-- Grad-CAM for explainability
-- Hyperparameter optimization
-- Inference pipeline for `seg_pred`
-- Deployment as an API or web app
+- Fine-tuning deeper layers of ResNet-50  
+- Grad-CAM for model explainability  
+- Hyperparameter optimization  
+- Inference pipeline for `seg_pred`  
+- Deployment as an API or web application  
 
 ---
 
 ## 📌 Key Takeaways
 
 This project demonstrates:
-- End-to-end Computer Vision workflow
-- Real dataset handling and debugging
-- Transfer Learning best practices
-- GPU-accelerated training
-- Honest and interpretable evaluation
 
-It reflects the workflow of a **Machine Learning / Computer Vision Engineer**, not a tutorial-level experiment.
+- An end-to-end Computer Vision workflow  
+- Real-world dataset handling and debugging  
+- Transfer Learning best practices  
+- GPU-accelerated training  
+- Honest and interpretable evaluation  
 
-👤 Author
+It represents the workflow and mindset of a **Machine Learning / Computer Vision Engineer**.
 
-José Geraldo do Espírito Santo Júnior
-AI & Machine Learning Portfolio
+---
+
+## 👤 Author
+
+**José Geraldo do Espírito Santo Júnior**  
+AI & Machine Learning Portfolio  
 Location: Brazil
