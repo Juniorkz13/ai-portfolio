@@ -61,3 +61,10 @@ hf_cache/
 # ======================
 *.tmp
 *.swp
+
+# ======================
+# Allow data structure for RAG project
+# ======================
+!projects/05_llms/data/
+!projects/05_llms/data/raw/
+!projects/05_llms/data/raw/.gitkeep

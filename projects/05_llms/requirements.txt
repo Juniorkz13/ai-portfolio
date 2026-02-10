@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+streamlit
+transformers
+torch
+sentence-transformers
+chromadb
+pypdf
+python-dotenv
+bitsandbytes
+accelerate
