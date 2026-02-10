@@ -1,87 +1,135 @@
-# LLM RAG Document Assistant
 
-## 📌 Overview
-This project implements an **Intelligent Assistant based on Large Language Models (LLMs)** using the **Retrieval-Augmented Generation (RAG)** architecture.  
-The system allows users to ask natural language questions about documents (PDF/TXT) and receive accurate, contextualized answers grounded in the provided content.
+# RAG System with FastAPI, FAISS and Local LLM
 
-The project was developed **100% with open-source technologies**, without the use of paid APIs, and is architected to scale to enterprise environments.
+## Overview
 
----
+This project implements a **Retrieval-Augmented Generation (RAG)** system designed to answer questions **strictly based on provided documents**, without hallucinations or external knowledge.
 
-## 🎯 Project Objective
-Demonstrate, in a practical and professional way, the application of **LLMs in real-world scenarios**, combining:
+It combines:
+- **FastAPI** for serving a REST API
+- **FAISS** for efficient vector similarity search
+- **Sentence Transformers** for text embeddings
+- **A local Large Language Model (LLM)** (TinyLlama) for controlled text generation
 
-- Natural Language Processing (NLP)
-- Semantic vector search
-- Prompt engineering
-- Modern applied AI architecture
-
-This project is well-suited to showcase skills for **Machine Learning Engineer, AI Engineer, and Data Scientist** roles.
+The system is fully local and suitable for **production-ready AI pipelines**, **enterprise use cases**, and **privacy-sensitive environments**.
 
 ---
 
-## 🧠 Architecture (RAG)
+## Architecture
 
-Simplified workflow:
-
-1. Document upload (PDF/TXT)
-2. Text extraction and cleaning
-3. Text chunking
-4. Embedding generation
-5. Storage in a vector database (Chroma)
-6. Semantic retrieval
-7. Answer generation using an LLM
-
----
-
-## 🛠 Technologies Used
-
-- **LLM:** Hugging Face (open-source models)
-- **Embeddings:** sentence-transformers
-- **Vector Database:** ChromaDB
-- **Backend:** FastAPI
-- **Frontend:** Streamlit
-- **Language:** Python 3.10+
-- **Containerization:** Docker
-
----
-
-## 📂 Project Structure
+The solution follows a modular RAG architecture:
 
 ```
-llm-rag-document-assistant/
+User Question
+      ↓
+Embedding Model (Sentence-Transformers)
+      ↓
+FAISS Vector Store (Similarity Search)
+      ↓
+Relevant Context Retrieval
+      ↓
+Local LLM (TinyLlama)
+      ↓
+Final Answer (Context-Grounded)
+```
+
+---
+
+## Key Features
+
+- 🔍 **Semantic Search** using FAISS
+- 🧠 **Context-grounded answers only**
+- 🚫 **Hallucination-safe prompt design**
+- ⚡ **FastAPI REST interface**
+- 🧩 **Modular and extensible codebase**
+- 🔒 **Fully local execution (no external APIs required)**
+
+---
+
+## API Endpoints
+
+### Ingest Documents
+Indexes documents located in `data/raw`.
+
+```
+POST /ingest
+```
+
+### Ask Questions
+Answers questions based only on indexed documents.
+
+```
+POST /ask
+{
+  "question": "What is this project about?"
+}
+```
+
+---
+
+## Prompt Strategy
+
+The system enforces strict answering rules:
+
+- Answers **must be derived exclusively from retrieved context**
+- No paraphrasing or external knowledge
+- If the answer is not explicitly found, the model returns:
+
+```
+"Não sei responder com base nos documentos disponíveis."
+```
+
+This ensures **trustworthy and auditable responses**, a critical requirement in real-world AI systems.
+
+---
+
+## Technologies Used
+
+- Python
+- FastAPI
+- FAISS
+- Hugging Face Transformers
+- Sentence-Transformers
+- PyTorch
+- TinyLlama (Local LLM)
+
+---
+
+## Use Cases
+
+- Internal knowledge bases
+- Enterprise document Q&A
+- AI assistants with controlled outputs
+- LLM experimentation with low hallucination risk
+- Privacy-first AI systems
+
+---
+
+## Project Structure
+
+```
+projects/05_llms/
+│
 ├── data/
-│   └── raw/
-├── notebooks/
+│   └── raw/          # Source documents
+│
 ├── src/
-│   ├── api/
-│   ├── rag/
-│   ├── llm/
-│   └── config.py
-├── tests/
+│   ├── api/          # FastAPI application
+│   ├── rag/          # RAG pipeline components
+│   └── llm/          # Local LLM wrapper
+│
 ├── requirements.txt
-├── Dockerfile
-├── README.md
-└── .env.example
+└── README.md
 ```
 
 ---
 
-## 🔐 Privacy and Cost
-- **100% local execution**
-- No data sent to external services
-- Zero execution cost
+## Author
+
+**José Geraldo do Espirito Santo Júnior**  
+📍 Brazil  
+🔗 LinkedIn: https://www.linkedin.com/in/josejunior13/
 
 ---
 
-## 🚀 Next Steps
-- RAG pipeline implementation
-- REST API development
-- Streamlit interface creation
-- Dockerization and final documentation
-
----
-
-## 👨‍💻 Author
-**José Geraldo do Espírito Santo Júnior**  
-📍 Location: Brazil
+This project is part of a professional AI portfolio focused on **applied Machine Learning, LLM systems, and production-ready AI solutions**.
