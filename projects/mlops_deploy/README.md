@@ -1,57 +1,50 @@
 
-# 🚀 Customer Churn Prediction API — MLOps & Deployment
+# MLOps Churn Prediction – Full Stack Application
 
-This project demonstrates an end-to-end **Machine Learning deployment pipeline**, covering
-model training, preprocessing, inference, and containerized deployment using **FastAPI** and **Docker**.
+This project is a **full-stack MLOps application** for **customer churn prediction**, combining a machine learning pipeline with a production-ready backend API and a modern frontend interface.
 
-The objective is to expose a **production-ready churn prediction service** with a clear
-feature contract, robust preprocessing, and versioned inference endpoints.
+The goal is to demonstrate **end-to-end ML deployment**, from model inference to a user-facing web application.
 
 ---
 
-## 🧠 Project Overview
+## 🚀 Project Overview
 
-Customer churn prediction is a critical business problem for subscription-based companies.
-In this project, a trained Machine Learning model is deployed as a REST API, enabling
-real-time churn prediction from structured customer data.
+- **Machine Learning**: Trained churn prediction model (scikit-learn pipeline)
+- **Backend**: FastAPI REST API for inference
+- **Frontend**: React + Vite application for interactive predictions
+- **MLOps Focus**: Clear API contract, reproducible setup, and production-ready structure
 
-This project focuses not only on modeling, but also on **production concerns**, such as:
-- Feature schema alignment
-- Robust preprocessing
-- Inference reliability
-- Deployment reproducibility
+---
+
+## 🧠 Churn Prediction Model
+
+The model predicts:
+- **Churn Probability** (0 → 1)
+- **Churn Prediction** (0 = No Churn, 1 = Churn)
+
+### Input Features
+| Feature | Description |
+|------|------------|
+| tenure | Number of months the customer has stayed |
+| monthly_charges | Monthly billing amount |
+| total_charges | Total amount charged |
+| contract_type | Contract duration (month-to-month, one-year, two-year) |
+| payment_method | Payment method |
+| internet_service | Type of internet service |
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-Client (JSON Request)
-        ↓
-FastAPI (/v1/predict)
-        ↓
-Pydantic Validation
-        ↓
-Pandas DataFrame
-        ↓
-Preprocessing Pipeline (Scaling + One-Hot Encoding)
-        ↓
-Trained ML Model
-        ↓
-Prediction Response (JSON)
+┌──────────────┐      HTTP      ┌──────────────┐
+│   Frontend   │ ───────────▶ │   FastAPI    │
+│ React + Vite │               │  Backend API │
+└──────────────┘               └──────────────┘
+                                      │
+                                      ▼
+                              ML Pipeline (.joblib)
 ```
-
----
-
-## 📦 Tech Stack
-
-- Python 3.10
-- FastAPI
-- Scikit-learn
-- Pandas
-- Joblib
-- Docker
-- Docker Compose
 
 ---
 
@@ -59,95 +52,131 @@ Prediction Response (JSON)
 
 ```
 projects/mlops_deploy/
-├── app/
-│   ├── main.py          # FastAPI application
-│   ├── schemas.py       # Request/response schemas
-│   └── __init__.py
-├── models/
+│
+├── app/                 # FastAPI backend
+│   ├── main.py
+│   ├── schemas.py
+│
+├── models/              # Trained ML pipeline
 │   └── churn_pipeline_v1.joblib
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+│
+├── frontend/            # React frontend
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── README.md
 ```
 
 ---
 
-## ▶️ Running the API Locally
+## 🔌 Backend – FastAPI
 
-From the root of the repository:
-
+### Start the API
 ```bash
-uvicorn projects.mlops_deploy.app.main:app --reload
+uvicorn app.main:app --reload
 ```
 
-Open:
-- Swagger UI: http://127.0.0.1:8000/docs
+- API URL: `http://127.0.0.1:8000`
+- Swagger Docs: `http://127.0.0.1:8000/docs`
 
----
-
-## 🐳 Running with Docker
-
-### Build and run manually
-```bash
-docker build -f projects/mlops_deploy/Dockerfile -t churn-api projects/mlops_deploy
-docker run -p 8000:8000 churn-api
-```
-
-### Using Docker Compose
-```bash
-docker compose up --build
-```
-
----
-
-## 🔮 Prediction Endpoint
-
+### Prediction Endpoint
 **POST** `/v1/predict`
 
-### Example Request
+Example payload:
 ```json
 {
   "tenure": 12,
-  "monthly_charges": 75.5,
-  "total_charges": 900.0,
-  "contract_type": "Month-to-month",
-  "payment_method": "Electronic check",
-  "internet_service": "Fiber optic"
+  "monthly_charges": 70.5,
+  "total_charges": 850.0,
+  "contract_type": "month-to-month",
+  "payment_method": "credit_card",
+  "internet_service": "fiber_optic"
 }
 ```
 
-### Example Response
+Example response:
 ```json
 {
-  "churn_probability": 0.8396,
-  "churn_prediction": 1
+  "churn_probability": 0.4886,
+  "churn_prediction": 0
 }
 ```
 
 ---
 
-## 📌 MLOps Highlights
+## 🎨 Frontend – React + Vite
 
-- Explicit feature contract between training and inference
-- Robust handling of unseen categorical values
-- Versioned API endpoint (`/v1/predict`)
-- Separation of training and serving logic
-- Fully containerized and reproducible deployment
+The frontend provides an interactive interface to:
+- Fill customer data
+- Submit predictions
+- Display churn probability and classification
+
+### Install dependencies
+```bash
+cd frontend
+npm install
+```
+
+### Start the frontend
+```bash
+npm run dev
+```
+
+- Frontend URL: `http://localhost:5173`
+
+### Environment Variable
+Create a `.env` file inside `frontend/`:
+
+```env
+VITE_API_BASE=http://127.0.0.1:8000
+```
 
 ---
 
-## 🚀 Future Improvements
+## 🔒 CORS Configuration
 
-- Model monitoring and drift detection
-- Advanced model versioning
-- CI/CD pipeline
-- Cloud deployment (AWS, GCP, Azure)
+CORS is enabled in the backend to allow frontend communication:
+- `http://localhost:5173`
+- `http://127.0.0.1:5173`
 
 ---
 
-## 👤 Author
+## 🧪 Local End-to-End Test
+
+1. Start backend:
+   ```bash
+   uvicorn app.main:app --reload
+   ```
+2. Start frontend:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+3. Open browser:
+   - `http://localhost:5173`
+4. Submit data and receive churn prediction.
+
+---
+
+## 🎯 Key Highlights
+
+- Full-stack ML application
+- Clean API contract with validation
+- Production-ready FastAPI setup
+- Modern React frontend
+- Clear separation of concerns
+- Ideal for **MLOps / ML Engineer / Full-Stack AI Engineer** portfolios
+
+---
+
+## 📌 Author
 
 **José Geraldo do Espírito Santo Júnior**  
-AI & Machine Learning Portfolio  
-Location: Brazil
+📍 Brazil  
+🔗 [LinkedIn](https://www.linkedin.com/in/josejunior13/)
+
+---
+
+## 📜 License
+This project is for educational and portfolio purposes.
