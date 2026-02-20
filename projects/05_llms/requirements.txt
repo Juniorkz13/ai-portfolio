@@ -1,11 +1,27 @@
-fastapi
-uvicorn
-streamlit
-transformers
-torch
-sentence-transformers
-chromadb
-pypdf
-python-dotenv
-bitsandbytes
-accelerate
+# --- API Layer ---
+fastapi>=0.95.0
+uvicorn[standard]>=0.23.0
+
+# --- Local LLM Support ---
+torch>=2.1.0
+transformers>=4.34.0
+accelerate>=0.20.0
+bitsandbytes>=0.39.0
+
+# --- Embeddings & Retrieval ---
+sentence-transformers>=2.3.0
+
+# Explicit vector database drivers
+faiss-cpu>=1.7.4            
+chromadb>=0.3.25           
+
+# --- Reranking & Relevance ---     
+scikit-learn>=1.3.0        
+
+# --- Document Processing ---
+pypdf>=3.8.0
+python-magic>=0.4.27       
+
+# --- Utils / Config ---
+python-dotenv>=1.0.0
+loguru>=0.7.0              

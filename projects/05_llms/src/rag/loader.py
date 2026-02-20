@@ -1,41 +1,76 @@
+from typing import List, Dict
 from pathlib import Path
-from typing import List
 from pypdf import PdfReader
 
-def load_txt(file_path: Path) -> str:
-    with open(file_path, "r", encoding="utf-8") as f:
-        text = f.read()
-    return text
 
-def load_pdf(file_path: Path) -> str:
-    reader = PdfReader(file_path)
-    pages = []
+class DocumentLoader:
+    """
+    Responsible for loading raw documents and extracting text
+    along with metadata for downstream processing.
+    """
 
-    for page in reader.pages:
-        pages.append(page.extract_text())
+    SUPPORTED_EXTENSIONS = [".pdf", ".txt"]
 
-    return "\n".join(pages)
+    def load(self, path: str) -> List[Dict]:
+        """
+        Load documents from a file or directory.
+        """
+        path = Path(path)
 
-def clean_text(text: str) -> str:
-    text = text.replace("\n", " ")
-    text = text.replace("\t", " ")
-    text = " ".join(text.split())
-    return text
+        if path.is_dir():
+            documents = []
+            for file in path.iterdir():
+                if file.suffix.lower() in self.SUPPORTED_EXTENSIONS:
+                    documents.extend(self._load_file(file))
+            return documents
 
-from pathlib import Path
-from typing import List
+        elif path.is_file():
+            return self._load_file(path)
 
+        else:
+            raise ValueError("Invalid path provided")
 
-def load_documents_from_dir(directory: Path) -> List[str]:
-    if not directory.exists():
-        return []
+    def _load_file(self, file_path: Path) -> List[Dict]:
+        """
+        Load a single file and extract its content.
+        """
+        if file_path.suffix.lower() == ".pdf":
+            return self._load_pdf(file_path)
 
-    documents = []
+        if file_path.suffix.lower() == ".txt":
+            return self._load_txt(file_path)
 
-    for file_path in directory.iterdir():
-        if file_path.is_file() and file_path.suffix == ".txt":
-            with open(file_path, "r", encoding="utf-8") as f:
-                documents.append(f.read())
+        raise ValueError(f"Unsupported file type: {file_path.suffix}")
 
-    return documents
+    def _load_pdf(self, file_path: Path) -> List[Dict]:
+        reader = PdfReader(file_path)
+        documents = []
 
+        for page_number, page in enumerate(reader.pages):
+            text = page.extract_text() or ""
+
+            documents.append(
+                {
+                    "content": text,
+                    "metadata": {
+                        "source": str(file_path),
+                        "page": page_number,
+                        "type": "pdf",
+                    },
+                }
+            )
+
+        return documents
+
+    def _load_txt(self, file_path: Path) -> List[Dict]:
+        text = file_path.read_text(encoding="utf-8")
+
+        return [
+            {
+                "content": text,
+                "metadata": {
+                    "source": str(file_path),
+                    "type": "txt",
+                },
+            }
+        ]

@@ -1,45 +1,65 @@
-import streamlit as st
-import requests
+from src.rag.loader import DocumentLoader
+from src.rag.splitter import TextSplitter
+from src.rag.embeddings import EmbeddingService
+from src.rag.vector_store import FaissVectorStore
 
-st.set_page_config(
-    page_title="LLM RAG Assistente de Documentos",
-    page_icon="🧠",
-    layout="centered"
-)
 
-st.title("🧠 LLM RAG Assistente de Documentos")
-st.write("Faça perguntas sobre seus documentos usando um assistente de IA.")
+def build_vector_index(
+    data_path: str,
+    index_path: str = "faiss.index",
+):
+    """
+    One-time or batch job to build the vector index.
+    """
+    loader = DocumentLoader()
+    splitter = TextSplitter()
+    embedder = EmbeddingService()
 
-API_URL = "http://localhost:8000"
+    vector_store = FaissVectorStore(
+        embedding_dim=384,
+        index_path=index_path,
+    )
 
-st.subheader("📂 Ingestão de Documentos")
+    documents = loader.load(data_path)
 
-if st.button("Ingestionar Documentos"):
-    with st.spinner("Indexando documentos..."):
-        response = requests.post(f"{API_URL}/ingest")
+    all_chunks = []
+    all_metadata = []
 
-        if response.status_code == 200:
-            st.success("Documentos indexados com sucesso!")
-        else:
-            st.error("Erro ao indexar documentos.")
+    for doc in documents:
+        chunks = splitter.split_text(doc["content"])
 
-st.subheader("❓ Faça uma Pergunta")
-
-question = st.text_input("Digite sua pergunta:")
-
-if st.button("Perguntar"):
-    if question.strip() == "":
-        st.warning("Por favor, insira uma pergunta.")
-    else:
-        with st.spinner("Pensando..."):
-            response = requests.post(
-                f"{API_URL}/ask",
-                json={"question": question}
+        for chunk in chunks:
+            all_chunks.append(chunk["content"])
+            all_metadata.append(
+                {
+                    **doc["metadata"],
+                    "chunk_index": chunk["chunk_index"],
+                    "content": chunk["content"],
+                }
             )
 
-            if response.status_code == 200:
-                answer = response.json()["answer"]
-                st.markdown("### ✅ Resposta")
-                st.write(answer)
-            else:
-                st.error("Erro ao obter resposta da API.")
+    embeddings = embedder.embed_texts(all_chunks)
+
+    vector_store.add_documents(
+        embeddings=embeddings,
+        metadatas=all_metadata,
+    )
+
+    vector_store.save()
+
+    print(f"Vector index built with {len(all_chunks)} chunks.")
+
+
+if __name__ == "__main__":
+    """
+    Example usage:
+    python app.py
+    """
+
+    DATA_PATH = "data/documents"
+    INDEX_PATH = "faiss.index"
+
+    build_vector_index(
+        data_path=DATA_PATH,
+        index_path=INDEX_PATH,
+    )

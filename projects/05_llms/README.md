@@ -1,135 +1,214 @@
+# 🚀 Enterprise Graph RAG Platform (Self-Healing LLM System)
 
-# RAG System with FastAPI, FAISS and Local LLM
+## Visão Geral
 
-## Overview
+Este projeto implementa uma **plataforma de Retrieval-Augmented Generation (RAG) de nível empresarial**, indo muito além de um pipeline acadêmico simples.
 
-This project implements a **Retrieval-Augmented Generation (RAG)** system designed to answer questions **strictly based on provided documents**, without hallucinations or external knowledge.
+O sistema foi projetado para simular **cenários reais de produção**, com foco em:
 
-It combines:
-- **FastAPI** for serving a REST API
-- **FAISS** for efficient vector similarity search
-- **Sentence Transformers** for text embeddings
-- **A local Large Language Model (LLM)** (TinyLlama) for controlled text generation
+- Qualidade e rastreabilidade das respostas  
+- Redução de alucinações  
+- Arquitetura modular e extensível  
+- Observabilidade e debug  
+- Recuperação automática de falhas (*self-healing*)  
+- Raciocínio relacional via grafos (*Graph RAG*)  
 
-The system is fully local and suitable for **production-ready AI pipelines**, **enterprise use cases**, and **privacy-sensitive environments**.
-
----
-
-## Architecture
-
-The solution follows a modular RAG architecture:
-
-```
-User Question
-      ↓
-Embedding Model (Sentence-Transformers)
-      ↓
-FAISS Vector Store (Similarity Search)
-      ↓
-Relevant Context Retrieval
-      ↓
-Local LLM (TinyLlama)
-      ↓
-Final Answer (Context-Grounded)
-```
+O resultado é um **RAG híbrido e robusto**, combinando **busca vetorial, reranking, knowledge graph, agentes de revisão e correção automática**.
 
 ---
 
-## Key Features
+## 🧠 Arquitetura Geral
 
-- 🔍 **Semantic Search** using FAISS
-- 🧠 **Context-grounded answers only**
-- 🚫 **Hallucination-safe prompt design**
-- ⚡ **FastAPI REST interface**
-- 🧩 **Modular and extensible codebase**
-- 🔒 **Fully local execution (no external APIs required)**
+```
+Client
+  ↓
+FastAPI (API Layer)
+  ↓
+Retrieval Pipeline
+  ├── Embeddings (Sentence Transformers)
+  ├── FAISS Vector Store
+  ├── Two-Stage Retrieval (Dense + Reranking)
+  ↓
+Graph RAG (Knowledge Graph)
+  ↓
+LLM Inference (Model Router)
+  ↓
+Review Agent (Anti-Hallucination)
+  ↓
+Self-Healing Agent (Automatic Retry)
+  ↓
+Final Answer + Sources
+```
 
 ---
 
-## API Endpoints
+## 🔑 Funcionalidades Implementadas
 
-### Ingest Documents
-Indexes documents located in `data/raw`.
+### ✅ Retrieval-Augmented Generation (RAG)
+- Chunking controlado de documentos  
+- Indexação vetorial com **FAISS**  
+- Busca semântica eficiente  
+- Metadados preservados para rastreabilidade  
 
-```
-POST /ingest
-```
+### ✅ Two-Stage Retrieval (Reranking)
+- Recuperação inicial com FAISS  
+- Reordenação com **Cross-Encoder (ms-marco)**  
+- Ganho real de precisão contextual  
 
-### Ask Questions
-Answers questions based only on indexed documents.
+### ✅ Graph RAG (Knowledge Graph)
+- Extração de entidades (Pessoa, Cargo, Tecnologias)  
+- Construção dinâmica de um **grafo de conhecimento**  
+- Relações explícitas (`HAS_ROLE`, `WORKED_WITH`)  
+- Uso do grafo como contexto adicional para o LLM  
+- Endpoint dedicado para consulta direta ao grafo  
 
-```
-POST /ask
+### ✅ Review Agent (Anti-Hallucination)
+- Avaliação automática das respostas  
+- Critérios:
+  - Faithfulness  
+  - Completeness  
+  - Hallucination  
+- Implementação **determinística e segura**  
+
+### ✅ Self-Healing RAG
+- Loop automático de correção quando a resposta é rejeitada  
+- Estratégias:
+  - Aumento do `top_k`  
+  - Novo prompt mais restritivo  
+- Apenas **uma nova tentativa**, evitando loops infinitos  
+
+### ✅ Visualização do Grafo
+- Geração de imagem PNG do knowledge graph  
+- Implementado com **NetworkX + Matplotlib**  
+- Útil para debug, validação e explicabilidade  
+
+### ✅ API Enterprise
+- Desenvolvida com **FastAPI**  
+- Swagger/OpenAPI automático  
+- Endpoints bem definidos e desacoplados  
+
+---
+
+## 📡 Endpoints
+
+### `/v1/query`
+Perguntas usando **RAG + Graph RAG + Self-Healing**
+
+```json
+POST /v1/query
 {
-  "question": "What is this project about?"
+  "query": "qual o nome do engenheiro de software?",
+  "top_k": 5
+}
+```
+
+### `/v1/graph/query`
+Consulta direta ao knowledge graph
+
+```json
+POST /v1/graph/query
+{
+  "entity": "José da Silva",
+  "depth": 2
 }
 ```
 
 ---
 
-## Prompt Strategy
+## 🧪 Avaliação e Qualidade
 
-The system enforces strict answering rules:
-
-- Answers **must be derived exclusively from retrieved context**
-- No paraphrasing or external knowledge
-- If the answer is not explicitly found, the model returns:
-
-```
-"Não sei responder com base nos documentos disponíveis."
-```
-
-This ensures **trustworthy and auditable responses**, a critical requirement in real-world AI systems.
+- Separação clara entre:
+  - Recuperação  
+  - Geração  
+  - Julgamento  
+- Preparado para integração com métricas automáticas de *evals*  
 
 ---
 
-## Technologies Used
+## 🧩 Tecnologias Utilizadas
 
-- Python
-- FastAPI
-- FAISS
-- Hugging Face Transformers
-- Sentence-Transformers
-- PyTorch
-- TinyLlama (Local LLM)
-
----
-
-## Use Cases
-
-- Internal knowledge bases
-- Enterprise document Q&A
-- AI assistants with controlled outputs
-- LLM experimentation with low hallucination risk
-- Privacy-first AI systems
+- Python 3.10  
+- FastAPI  
+- FAISS  
+- Sentence-Transformers  
+- HuggingFace Transformers  
+- Cross-Encoder  
+- NetworkX  
+- Matplotlib  
+- PyTorch  
 
 ---
 
-## Project Structure
+## 🐳 Execução com Docker (Recomendado)
 
-```
-projects/05_llms/
-│
-├── data/
-│   └── raw/          # Source documents
-│
-├── src/
-│   ├── api/          # FastAPI application
-│   ├── rag/          # RAG pipeline components
-│   └── llm/          # Local LLM wrapper
-│
-├── requirements.txt
-└── README.md
+O projeto é totalmente **dockerizado**, garantindo reprodutibilidade e facilidade de deploy.
+
+### Pré-requisitos
+- Docker Engine
+- Docker Compose v2 (plugin)
+
+Instalação do Compose v2 (Ubuntu):
+
+```bash
+sudo apt update
+sudo apt install docker-compose-plugin
 ```
 
+### Build e execução
+
+Na pasta `projects`:
+
+```bash
+docker compose build
+docker compose up
+```
+
+A API ficará disponível em:
+
+```
+http://localhost:8000/docs
+```
+
+### Persistência
+- Índice FAISS persistido via volume  
+- Cache de modelos HuggingFace reutilizado entre execuções  
+
 ---
 
-## Author
+## 🚀 Execução Local (sem Docker)
 
-**José Geraldo do Espirito Santo Júnior**  
-📍 Brazil  
-🔗 LinkedIn: https://www.linkedin.com/in/josejunior13/
+```bash
+pip install -r requirements.txt
+python src/app.py        # Indexação
+uvicorn src.api.main:app # API
+```
 
 ---
 
-This project is part of a professional AI portfolio focused on **applied Machine Learning, LLM systems, and production-ready AI solutions**.
+## 📈 Possíveis Evoluções
+
+- Persistência do grafo em Neo4j  
+- LLM-as-a-Judge completo  
+- Containers GPU (NVIDIA)  
+- Observabilidade (logs e métricas)  
+- Interface web para visualização do grafo  
+
+---
+
+## 💼 Contexto Profissional
+
+Este projeto foi desenvolvido com foco em **ambientes corporativos**, abordando problemas reais de sistemas baseados em LLMs:
+
+- Alucinação  
+- Contexto insuficiente  
+- Dados não estruturados  
+- Necessidade de explicabilidade  
+
+Ele demonstra **engenharia de IA aplicada**, não apenas uso de modelos.
+
+---
+
+## 👤 Autor
+
+Projeto desenvolvido por **Júnior Kz**  
+Engenharia de IA • LLMs • RAG • Sistemas Inteligentes
