@@ -1,23 +1,23 @@
 # 🚀 Enterprise Graph RAG Platform (Self-Healing LLM System)
 
-## Visão Geral
+## Overview
 
-Este projeto implementa uma **plataforma de Retrieval-Augmented Generation (RAG) de nível empresarial**, indo muito além de um pipeline acadêmico simples.
+This project implements an **enterprise-grade Retrieval-Augmented Generation (RAG) platform**, going far beyond a simple academic pipeline.
 
-O sistema foi projetado para simular **cenários reais de produção**, com foco em:
+The system is designed to simulate **real production scenarios**, with a strong focus on:
 
-- Qualidade e rastreabilidade das respostas  
-- Redução de alucinações  
-- Arquitetura modular e extensível  
-- Observabilidade e debug  
-- Recuperação automática de falhas (*self-healing*)  
-- Raciocínio relacional via grafos (*Graph RAG*)  
+- Answer quality and traceability  
+- Hallucination reduction  
+- Modular and extensible architecture  
+- Observability and debuggability  
+- Automatic failure recovery (*self-healing*)  
+- Relational reasoning via knowledge graphs (*Graph RAG*)  
 
-O resultado é um **RAG híbrido e robusto**, combinando **busca vetorial, reranking, knowledge graph, agentes de revisão e correção automática**.
+The result is a **robust hybrid RAG system**, combining **vector search, reranking, knowledge graphs, review agents, and automatic correction loops**.
 
 ---
 
-## 🧠 Arquitetura Geral
+## 🧠 High-Level Architecture
 
 ```
 Client
@@ -42,68 +42,68 @@ Final Answer + Sources
 
 ---
 
-## 🔑 Funcionalidades Implementadas
+## 🔑 Implemented Features
 
 ### ✅ Retrieval-Augmented Generation (RAG)
-- Chunking controlado de documentos  
-- Indexação vetorial com **FAISS**  
-- Busca semântica eficiente  
-- Metadados preservados para rastreabilidade  
+- Controlled document chunking  
+- Vector indexing with **FAISS**  
+- Efficient semantic search  
+- Metadata preservation for traceability  
 
 ### ✅ Two-Stage Retrieval (Reranking)
-- Recuperação inicial com FAISS  
-- Reordenação com **Cross-Encoder (ms-marco)**  
-- Ganho real de precisão contextual  
+- Initial dense retrieval with FAISS  
+- Re-ranking with **Cross-Encoder (MS MARCO)**  
+- Significant improvement in contextual precision  
 
 ### ✅ Graph RAG (Knowledge Graph)
-- Extração de entidades (Pessoa, Cargo, Tecnologias)  
-- Construção dinâmica de um **grafo de conhecimento**  
-- Relações explícitas (`HAS_ROLE`, `WORKED_WITH`)  
-- Uso do grafo como contexto adicional para o LLM  
-- Endpoint dedicado para consulta direta ao grafo  
+- Entity extraction (Person, Role, Technologies)  
+- Dynamic **knowledge graph** construction  
+- Explicit relations (`HAS_ROLE`, `WORKED_WITH`)  
+- Graph-based context enrichment for the LLM  
+- Dedicated API endpoint for direct graph queries  
 
 ### ✅ Review Agent (Anti-Hallucination)
-- Avaliação automática das respostas  
-- Critérios:
+- Automatic answer evaluation  
+- Criteria:
   - Faithfulness  
   - Completeness  
-  - Hallucination  
-- Implementação **determinística e segura**  
+  - Hallucination detection  
+- **Deterministic and safe** implementation  
 
 ### ✅ Self-Healing RAG
-- Loop automático de correção quando a resposta é rejeitada  
-- Estratégias:
-  - Aumento do `top_k`  
-  - Novo prompt mais restritivo  
-- Apenas **uma nova tentativa**, evitando loops infinitos  
+- Automatic correction loop when an answer is rejected  
+- Strategies:
+  - Increasing `top_k`  
+  - Stricter prompt constraints  
+- Single retry only (prevents infinite loops)  
 
-### ✅ Visualização do Grafo
-- Geração de imagem PNG do knowledge graph  
-- Implementado com **NetworkX + Matplotlib**  
-- Útil para debug, validação e explicabilidade  
+### ✅ Graph Visualization
+- PNG visualization of the knowledge graph  
+- Implemented with **NetworkX + Matplotlib**  
+- Useful for debugging, validation, and explainability  
 
-### ✅ API Enterprise
-- Desenvolvida com **FastAPI**  
-- Swagger/OpenAPI automático  
-- Endpoints bem definidos e desacoplados  
+### ✅ Enterprise-Ready API
+- Built with **FastAPI**  
+- Automatic Swagger / OpenAPI docs  
+- Clean and decoupled endpoints  
 
 ---
 
-## 📡 Endpoints
+## 📡 API Endpoints
 
 ### `/v1/query`
-Perguntas usando **RAG + Graph RAG + Self-Healing**
+RAG + Graph RAG + Self-Healing query endpoint
 
 ```json
 POST /v1/query
 {
-  "query": "qual o nome do engenheiro de software?",
+  "query": "What is the name of the software engineer?",
   "top_k": 5
 }
 ```
 
 ### `/v1/graph/query`
-Consulta direta ao knowledge graph
+Direct knowledge graph query
 
 ```json
 POST /v1/graph/query
@@ -115,17 +115,17 @@ POST /v1/graph/query
 
 ---
 
-## 🧪 Avaliação e Qualidade
+## 🧪 Evaluation & Quality
 
-- Separação clara entre:
-  - Recuperação  
-  - Geração  
-  - Julgamento  
-- Preparado para integração com métricas automáticas de *evals*  
+- Clear separation between:
+  - Retrieval  
+  - Generation  
+  - Judgment  
+- Ready for integration with automated evaluation metrics (*evals*)  
 
 ---
 
-## 🧩 Tecnologias Utilizadas
+## 🧩 Tech Stack
 
 - Python 3.10  
 - FastAPI  
@@ -139,76 +139,74 @@ POST /v1/graph/query
 
 ---
 
-## 🐳 Execução com Docker (Recomendado)
+## 🐳 Docker Execution (Recommended)
 
-O projeto é totalmente **dockerizado**, garantindo reprodutibilidade e facilidade de deploy.
+The project is fully **dockerized**, ensuring reproducibility and easy deployment.
 
-### Pré-requisitos
-- Docker Engine
+### Prerequisites
+- Docker Engine  
 - Docker Compose v2 (plugin)
 
-Instalação do Compose v2 (Ubuntu):
+Install Docker Compose v2 (Ubuntu):
 
 ```bash
 sudo apt update
 sudo apt install docker-compose-plugin
 ```
 
-### Build e execução
+### Build & Run
 
-Na pasta `projects`:
+From the `projects` directory:
 
 ```bash
 docker compose build
 docker compose up
 ```
 
-A API ficará disponível em:
+API will be available at:
 
 ```
 http://localhost:8000/docs
 ```
 
-### Persistência
-- Índice FAISS persistido via volume  
-- Cache de modelos HuggingFace reutilizado entre execuções  
-
 ---
 
-## 🚀 Execução Local (sem Docker)
+## 🚀 Local Execution (Without Docker)
 
 ```bash
 pip install -r requirements.txt
-python src/app.py        # Indexação
-uvicorn src.api.main:app # API
+python src/app.py        # Build index
+uvicorn src.api.main:app # Run API
 ```
 
 ---
 
-## 📈 Possíveis Evoluções
+## 📈 Possible Extensions
 
-- Persistência do grafo em Neo4j  
-- LLM-as-a-Judge completo  
-- Containers GPU (NVIDIA)  
-- Observabilidade (logs e métricas)  
-- Interface web para visualização do grafo  
-
----
-
-## 💼 Contexto Profissional
-
-Este projeto foi desenvolvido com foco em **ambientes corporativos**, abordando problemas reais de sistemas baseados em LLMs:
-
-- Alucinação  
-- Contexto insuficiente  
-- Dados não estruturados  
-- Necessidade de explicabilidade  
-
-Ele demonstra **engenharia de IA aplicada**, não apenas uso de modelos.
+- Persisting the graph in Neo4j  
+- Full LLM-as-a-Judge evaluation  
+- GPU-enabled containers (NVIDIA)  
+- Observability (logs and metrics)  
+- Web UI for graph visualization  
 
 ---
 
-## 👤 Autor
+## 💼 Professional Context
 
-Projeto desenvolvido por **Júnior Kz**  
-Engenharia de IA • LLMs • RAG • Sistemas Inteligentes
+This project was built with **enterprise environments** in mind, addressing real-world challenges of LLM-based systems:
+
+- Hallucination  
+- Insufficient context  
+- Unstructured data  
+- Explainability requirements  
+
+It demonstrates **applied AI engineering**, not just model usage.
+
+---
+
+## 👤 Author
+
+**José Geraldo do Espírito Santo Júnior**  
+Brazil  
+
+🔗 LinkedIn: https://www.linkedin.com/in/josejunior13/
