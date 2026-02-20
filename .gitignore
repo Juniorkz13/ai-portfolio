@@ -81,3 +81,9 @@ hf_cache/
 !projects/05_llms/data/
 !projects/05_llms/data/raw/
 !projects/05_llms/data/raw/.gitkeep
+
+# ======================
+# FAISS / data
+# ======================
+faiss_index/
+data/

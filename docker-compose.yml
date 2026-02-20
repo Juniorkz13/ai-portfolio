@@ -1,9 +1,22 @@
 services:
-  churn-api:
+  graph-rag-api:
     build:
-      context: projects/mlops_deploy
+      context: ./projects/05_llms
       dockerfile: Dockerfile
-    image: ai-portfolio-churn-api
-    container_name: churn_api
+    image: ai-portfolio-graph-rag
+    container_name: graph_rag_api
     ports:
       - "8000:8000"
+    volumes:
+      - ./projects/05_llms/data:/app/data
+      - ./projects/05_llms/faiss_index:/app/faiss_index
+    environment:
+      - HF_HOME=/app/.cache/huggingface
+      - TRANSFORMERS_CACHE=/app/.cache/huggingface
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    restart: unless-stopped
