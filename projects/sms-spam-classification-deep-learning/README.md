@@ -128,16 +128,16 @@ From the root of the repository:
 
 ```bash
 # Baseline / LSTM
-python -m projects.02_deep_learning.src.train
-python -m projects.02_deep_learning.src.evaluate
+python -m sms-spam-classification-deep-learning.src.train
+python -m sms-spam-classification-deep-learning.src.evaluate
 
 # BERT Fine-Tuning
-python -m projects.02_deep_learning.src.train_bert
-python -m projects.02_deep_learning.src.evaluate_bert
+python -m sms-spam-classification-deep-learning.src.train_bert
+python -m sms-spam-classification-deep-learning.src.evaluate_bert
 ```
 
 Dataset must be placed at:
-projects/02_deep_learning/data/raw/SMSSpamCollection
+projects/sms-spam-classification-deep-learning/data/raw/SMSSpamCollection
 
 ---
 

@@ -78,9 +78,9 @@ hf_cache/
 # ======================
 # Allow data structure for RAG project
 # ======================
-!projects/05_llms/data/
-!projects/05_llms/data/raw/
-!projects/05_llms/data/raw/.gitkeep
+!projects/sms-spam-classification-deep-learning/data/
+!projects/sms-spam-classification-deep-learning/data/raw/
+!projects/sms-spam-classification-deep-learning/data/raw/.gitkeep
 
 # ======================
 # FAISS / data

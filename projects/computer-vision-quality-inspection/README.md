@@ -66,7 +66,7 @@ The dataset contains real photographs with variations in lighting, scale, and pe
 ## 🏗️ Project Structure
 
 ```
-project_04_intel_image_classification/
+computer-vision-quality-inspection/
 ├── data/
 │   └── raw/                 # ignored by git
 ├── experiments/

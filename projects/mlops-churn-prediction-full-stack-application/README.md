@@ -51,7 +51,7 @@ The model predicts:
 ## 📁 Project Structure
 
 ```
-projects/mlops_deploy/
+projects/mlops-churn-prediction-full-stack-application/
 │
 ├── app/                 # FastAPI backend
 │   ├── main.py

@@ -110,8 +110,8 @@ Additionally, the decision threshold was adjusted to better align with business 
 From the root of the repository, run:
 
 ```bash
-python -m projects.01_machine_learning.src.train
-python -m projects.01_machine_learning.src.evaluate
+python -m projects.churn-prediction-system.src.train
+python -m projects.churn-prediction-system.src.evaluate
 ```
 
 ## 📊 Results and Conclusion
