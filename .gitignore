@@ -53,7 +53,7 @@ yarn-error.log*
 */models/
 */checkpoints/
 */outputs/
-*projects/04_intel_image_classification/experiments/predictions/
+*projects/computer-vision-quality-inspection/experiments/predictions/
 
 
 
