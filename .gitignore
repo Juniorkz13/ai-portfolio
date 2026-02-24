@@ -87,3 +87,13 @@ hf_cache/
 # ======================
 faiss_index/
 data/
+
+# ======================
+# RAG Enterprise Assistant - allow PDFs
+# ======================
+!projects/rag-enterprise-assistant/data/
+!projects/rag-enterprise-assistant/data/pdfs/
+!projects/rag-enterprise-assistant/data/pdfs/*.pdf
+
+# Still ignore FAISS index
+projects/rag-enterprise-assistant/data/faiss_index/
