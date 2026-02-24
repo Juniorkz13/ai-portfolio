@@ -44,11 +44,14 @@ def startup_event():
     init_rag()
 
 
-@app.post("/chat", response_model=ChatResponse)
+from fastapi import Request
+
+@app.post("/chat")
 @limiter.limit("5/minute")
-def chat(request: ChatRequest):
-    session_id = request.session_id or str(uuid.uuid4())
-    answer = answer_question(request.question, session_id)
+async def chat(request: Request, payload: ChatRequest):
+    session_id = payload.session_id
+    answer = answer_question(payload.question, session_id)
+
     return {
         "answer": answer,
         "session_id": session_id
