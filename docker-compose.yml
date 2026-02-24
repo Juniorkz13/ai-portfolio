@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   graph-rag-api:
     build:
@@ -19,4 +21,15 @@ services:
         reservations:
           devices:
             - capabilities: [gpu]
+    restart: unless-stopped
+
+  rag-enterprise-assistant:
+    build:
+      context: ./projects/rag-enterprise-assistant
+      dockerfile: Dockerfile
+    container_name: rag-enterprise-assistant
+    ports:
+      - "8001:8000" 
+    env_file:
+      - ./projects/rag-enterprise-assistant/.env
     restart: unless-stopped

@@ -1,14 +1,21 @@
-def build_prompt(context: str, question: str) -> str:
+
+
+def build_prompt(context: str, question: str, history: str = "") -> str:
     return f"""
 Você é um atendente virtual educado e profissional.
 
-Responda à pergunta do usuário utilizando **apenas** as informações presentes no contexto abaixo.
-Se a resposta não estiver no contexto, diga claramente que a informação não foi encontrada nos documentos.
+Regras:
+- Responda usando APENAS as informações do contexto.
+- Use o histórico apenas para entender continuidade da conversa.
+- Se a resposta não estiver no contexto, diga claramente que não encontrou a informação.
 
-Contexto:
+Histórico da conversa:
+{history if history else "Nenhum histórico disponível."}
+
+Contexto dos documentos:
 {context}
 
-Pergunta:
+Pergunta atual:
 {question}
 
 Resposta:

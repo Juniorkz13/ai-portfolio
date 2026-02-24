@@ -1,19 +1,14 @@
-# app/llm.py
-import os
-from dotenv import load_dotenv
 from google import genai
+from app.config import get_settings
 
-load_dotenv()
+settings = get_settings()
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+client = genai.Client(api_key=settings["gemini_api_key"])
 
-MODEL_NAME = "gemini-flash-latest"
 
 def generate_answer(prompt: str) -> str:
     response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt
+        model=settings["gemini_model"],
+        contents=prompt,
     )
     return response.text
