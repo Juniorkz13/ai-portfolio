@@ -1,8 +1,14 @@
 import axios from 'axios';
 import type { LoginRequest, LoginResponse, AnalysisRequest, AnalysisResponse } from '@/types';
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const RAW = import.meta.env.VITE_API_URL;
+console.log('[API_URL]', RAW);
 
+if (!RAW) {
+  throw new Error('VITE_API_URL não definida no build da Vercel');
+}
+
+const API_URL = RAW.replace(/\/$/, '');
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
   timeout: 30000,
