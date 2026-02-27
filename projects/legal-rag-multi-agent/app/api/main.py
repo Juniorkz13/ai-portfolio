@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Header, status
+from fastapi import FastAPI, Depends, HTTPException, Header, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -33,11 +33,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ========== ADICIONAR CORS AQUI ==========
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://ai-portfolio-beta-cyan.vercel.app",  
+        "https://ai-portfolio-beta-cyan.vercel.app",
         "http://localhost:5173",
     ],
     allow_origin_regex=r"^https://.*\.vercel\.app$",
@@ -45,7 +44,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# =========================================
+
+# Middleware para liberar OPTIONS
+@app.middleware("http")
+async def allow_preflight(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return await call_next(request)
+    return await call_next(request)
 
 # Include routers
 app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
