@@ -3,9 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Scale, Lock, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
 import { authApi } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/Common/Button';
+
+type LoginError = {
+  detail?: string;
+};
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -18,15 +23,29 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     try {
-      const response = await authApi.login(formData);
-      setAuth({ username: formData.username }, response.access_token);
-      toast.success('Login successful!');
+      const response = await authApi.login({
+        username: formData.username.trim(),
+        password: formData.password,
+      });
+
+      if (!response?.access_token) {
+        throw new Error('Token não recebido da API');
+      }
+
+      setAuth({ username: formData.username.trim() }, response.access_token);
+      toast.success('Login realizado com sucesso!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Login failed');
+    } catch (err: unknown) {
+      const axiosErr = err as AxiosError<LoginError>;
+      const message =
+        axiosErr.response?.data?.detail ||
+        axiosErr.message ||
+        'Falha no login';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -75,7 +94,9 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" loading={loading} className="w-full">Entrar</Button>
+            <Button type="submit" loading={loading} className="w-full">
+              Entrar
+            </Button>
           </form>
 
           <div className="mt-6 od-card-soft p-4">
