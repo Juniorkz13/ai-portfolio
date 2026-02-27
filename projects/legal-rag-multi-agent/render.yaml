@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: legal-rag-backend
+    env: python
+    region: oregon
+    plan: free
+    rootDir: projects/legal-rag-multi-agent
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
