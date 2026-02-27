@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --od-bg: #1e2127;
+  --od-bg-elev: #282c34;
+  --od-surface: #2c313c;
+  --od-surface-2: #353b45;
+  --od-border: #3e4451;
+  --od-text: #abb2bf;
+  --od-text-strong: #e6edf3;
+  --od-muted: #7f848e;
+  --od-orange: #d19a66;
+  --od-orange-strong: #e5a56e;
+  --od-red: #e06c75;
+  --od-yellow: #e5c07b;
+  --od-green: #98c379;
+  --od-blue: #61afef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: radial-gradient(1200px 800px at 10% -10%, #2a2f38 0%, var(--od-bg) 40%, #181a1f 100%);
+  color: var(--od-text);
+}
+
+@layer components {
+  .od-card {
+    @apply rounded-2xl border shadow-sm;
+    background: color-mix(in srgb, var(--od-bg-elev) 92%, black 8%);
+    border-color: var(--od-border);
+  }
+
+  .od-card-soft {
+    @apply rounded-xl border;
+    background: color-mix(in srgb, var(--od-surface) 94%, black 6%);
+    border-color: var(--od-border);
+  }
+
+  .od-input {
+    @apply w-full rounded-xl border px-4 py-3 outline-none transition;
+    background: #20242c;
+    border-color: var(--od-border);
+    color: var(--od-text-strong);
+  }
+
+  .od-input::placeholder {
+    color: var(--od-muted);
+  }
+
+  .od-input:focus {
+    border-color: var(--od-orange);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--od-orange) 28%, transparent 72%);
+  }
+
+  .od-title {
+    color: var(--od-text-strong);
+  }
+
+  .od-muted {
+    color: var(--od-muted);
+  }
+}

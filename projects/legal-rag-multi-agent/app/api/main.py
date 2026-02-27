@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Header, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, APIKeyHeader
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from datetime import timedelta
@@ -26,13 +27,40 @@ class AnalyzeRequest(BaseModel):
 
 # FastAPI instance
 app = FastAPI(
-    title=settings.app_name,
-    version=settings.app_version,
-    debug=settings.debug
+    title="Legal RAG Multi-Agent API",
+    description="Multi-domain legal analysis system powered by AI agents",
+    version="1.0.0"
 )
 
+# ========== ADICIONAR CORS AQUI ==========
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",      # Frontend dev
+        "http://127.0.0.1:3000",      # Frontend dev alternativo
+        "http://localhost:5173",      # Vite default
+        "http://127.0.0.1:5173",      # Vite alternativo
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],              # Permite GET, POST, OPTIONS, etc
+    allow_headers=["*"],              # Permite todos os headers
+)
+# =========================================
+
 # Include routers
-app.include_router(auth_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
+
+# ========== ADICIONAR ENDPOINT OPTIONS PARA DEBUG ==========
+@app.options("/api/v1/login")
+async def options_login():
+    """Handle preflight OPTIONS request"""
+    return {"message": "OK"}
+
+@app.options("/api/v1/analyze")
+async def options_analyze():
+    """Handle preflight OPTIONS request"""
+    return {"message": "OK"}
+# ============================================================
 
 workflow = LegalRAGWorkflow()
 

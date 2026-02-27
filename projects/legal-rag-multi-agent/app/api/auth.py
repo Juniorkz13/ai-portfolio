@@ -1,56 +1,38 @@
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
-from datetime import timedelta
+from hmac import compare_digest
 
-from app.core.security import create_access_token, verify_password
-from app.core.settings import settings
+from app.core.security import create_access_token
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)
-
-router = APIRouter(tags=["auth"])
+router = APIRouter()
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
-class LoginResponse(BaseModel):
+class Token(BaseModel):
     access_token: str
     token_type: str
 
-# Demo users
-DEMO_USERS = {
-    "user@example.com": "password123",
+# DEV ONLY
+FAKE_USERS_DB = {
     "admin@example.com": "admin123",
-    "ratelimit_user": "admin"
+    "user@example.com": "password123",
+    "ratelimit_user": "admin",
 }
 
-@router.post("/login", response_model=LoginResponse)
-async def login(request: LoginRequest):
-    """Realiza login e retorna JWT token"""
-    try:
-        if request.username not in DEMO_USERS:
-            raise HTTPException(status_code=401, detail="Credenciais inválidas")
-        
-        stored_password = DEMO_USERS[request.username]
-        if request.password != stored_password:
-            raise HTTPException(status_code=401, detail="Credenciais inválidas")
-        
-        access_token_expires = timedelta(minutes=settings.jwt_expiration_minutes)
-        access_token = create_access_token(
-            data={"sub": request.username},
-            expires_delta=access_token_expires
+@router.post("/login", response_model=Token)
+async def login(credentials: LoginRequest):
+    expected_password = FAKE_USERS_DB.get(credentials.username)
+
+    if not expected_password or not compare_digest(credentials.password, expected_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-        
-        logger.info(
-            "user_login",
-            extra={"extra": {"username": request.username}}
-        )
-        
-        return {"access_token": access_token, "token_type": "bearer"}
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Login error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+
+    access_token = create_access_token(data={"sub": credentials.username})
+    return {"access_token": access_token, "token_type": "bearer"}
