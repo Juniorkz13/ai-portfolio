@@ -1,99 +1,303 @@
-# ======================
-# Python
-# ======================
-.venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# ==========================================
+# AI Portfolio - Git Ignore
+# ==========================================
 
-# ======================
-# Node / Frontend
-# ======================
-node_modules/
-dist/
-build/
-.vite/
-
-# ======================
-# Jupyter
-# ======================
-.ipynb_checkpoints/
-
-# ======================
-# IDE / OS
-# ======================
-.vscode/
-.DS_Store
-Thumbs.db
-.idea/
-
-# ======================
-# Environment variables
-# ======================
+# Environment Variables & Secrets
+# ==========================================
 .env
-.env.*
+.env.local
+.env.*.local
+.env.production
+*.secret
+secrets/
+credentials/
 
-# ======================
-# Data & ML artifacts
-# ======================
-data/
-datasets/
-models/
-checkpoints/
-outputs/
+# Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+# ==========================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+virtualenv/
+
+# Distribution / Packaging
+# ==========================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+# ==========================================
+*.manifest
+*.spec
+
+# Unit Test / Coverage
+# ==========================================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+.hypothesis/
+
+# Jupyter Notebook
+# ==========================================
+.ipynb_checkpoints
+*.ipynb
+!**/examples/*.ipynb
+
+# IDEs & Editors
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.DS_Store
+.AppleDouble
+.LSOverride
+*.sublime-project
+*.sublime-workspace
+
+# PyCharm
+# ==========================================
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# VS Code
+# ==========================================
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# mypy
+# ==========================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+# ==========================================
+.pyre/
+
+# pytype static type analyzer
+# ==========================================
+.pytype/
+
+# Logs
+# ==========================================
+*.log
 logs/
+log/
+*.log.*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Database
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+db.sqlite3
+*.sql
+data/
+*.dump
+
+# Docker
+# ==========================================
+docker-compose.override.yml
+.dockerignore
+
+# OS Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary Files
+# ==========================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+tmp/
+temp/
+
+# Node.js (if you add frontend later)
+# ==========================================
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
 
-# Ignore data/models inside any project
-*/data/
-*/datasets/
-*/models/
-*/checkpoints/
-*/outputs/
-*projects/computer-vision-quality-inspection/experiments/predictions/
+# AI/ML Specific
+# ==========================================
+# Model files (large binary files)
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.ckpt
+*.pb
+*.onnx
+models/
+checkpoints/
 
+# Vector databases
+chroma/
+faiss/
+vectordb/
+embeddings/
 
+# Datasets (if storing locally)
+datasets/
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.arrow
 
-# ======================
-# Hugging Face / Transformers
-# ======================
+# Hugging Face cache
 .cache/
-huggingface/
-hf_cache/
+.huggingface/
+transformers_cache/
 
-# ======================
-# Docker
-# ======================
-*.log
+# LangChain
+.langchain/
 
-# ======================
-# Misc
-# ======================
-*.tmp
-*.swp
+# Cloud & Deployment
+# ==========================================
+# AWS
+.aws/
+*.pem
+*.key
 
-# ======================
-# Allow data structure for RAG project
-# ======================
-!projects/sms-spam-classification-deep-learning/data/
-!projects/sms-spam-classification-deep-learning/data/raw/
-!projects/sms-spam-classification-deep-learning/data/raw/.gitkeep
+# GCP
+*.json
+!**/examples/*.json
+gcp-credentials/
+service-account*.json
 
-# ======================
-# FAISS / data
-# ======================
-faiss_index/
-data/
+# Azure
+.azure/
 
-# ======================
-# RAG Enterprise Assistant - allow PDFs
-# ======================
-!projects/rag-enterprise-assistant/data/
-!projects/rag-enterprise-assistant/data/pdfs/
-!projects/rag-enterprise-assistant/data/pdfs/*.pdf
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
 
-# Still ignore FAISS index
-projects/rag-enterprise-assistant/data/faiss_index/
+# Ansible
+*.retry
+
+# Project Specific
+# ==========================================
+# Legal RAG Multi-Agent
+projects/legal-rag-multi-agent/.env
+projects/legal-rag-multi-agent/logs/
+projects/legal-rag-multi-agent/data/
+projects/legal-rag-multi-agent/*.db
+
+# Add other project-specific ignores as needed
+# projects/your-new-project/.env
+# projects/your-new-project/data/
+
+# Documentation builds
+# ==========================================
+docs/_build/
+site/
+.readthedocs.yml
+
+# Static files
+# ==========================================
+staticfiles/
+static/
+media/
+uploads/
+
+# Certificates & Keys
+# ==========================================
+*.crt
+*.key
+*.pem
+*.p12
+*.pfx
+*.cer
+*.der
+
+# Backup files
+# ==========================================
+*.backup
+*.bkp
+*~
+
+# Archives
+# ==========================================
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.bz2
+*.gz
+
+# Keep important example files
+# ==========================================
+!.env.example
+!docker-compose.yml
+!Dockerfile
+!requirements.txt
+!README.md
+!LICENSE
+# ==========================================
+projects/computer-vision-quality-inspection/experiments/predictions/
