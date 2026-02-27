@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import timedelta
 import uuid
+from fastapi.openapi.utils import get_openapi_tags
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
@@ -85,6 +86,17 @@ def verify_bearer_token(credentials: HTTPAuthorizationCredentials = Depends(secu
         )
     
     return username
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    if request.url.path in ["/health", "/docs", "/openapi.json", "/api/v1/login"]:
+        return await call_next(request)
+
+    # ...existing code de validação...
+    return await call_next(request)
 
 # Routes
 @app.get("/health")
