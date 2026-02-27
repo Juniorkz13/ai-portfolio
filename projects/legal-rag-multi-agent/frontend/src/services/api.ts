@@ -1,15 +1,12 @@
 import axios from 'axios';
 import type { LoginRequest, LoginResponse, AnalysisRequest, AnalysisResponse } from '@/types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const API_KEY = import.meta.env.VITE_API_KEY || 'test-key';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': API_KEY,
-  },
+export const api = axios.create({
+  baseURL: `${API_URL}/api/v1`,
+  timeout: 30000,
+  headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use(

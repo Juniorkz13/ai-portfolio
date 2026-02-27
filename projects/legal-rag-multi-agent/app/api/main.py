@@ -36,10 +36,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",      # Frontend dev
-        "http://127.0.0.1:3000",      # Frontend dev alternativo
-        "http://localhost:5173",      # Vite default
-        "http://127.0.0.1:5173",      # Vite alternativo
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://legal-rag-frontend.vercel.app",   # ajuste para sua URL real
+        "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],              # Permite GET, POST, OPTIONS, etc
