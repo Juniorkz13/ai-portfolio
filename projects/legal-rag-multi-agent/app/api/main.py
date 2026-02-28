@@ -8,6 +8,7 @@ import uuid
 import jwt
 import time
 import json
+import asyncio
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
@@ -114,48 +115,61 @@ async def analyze(request: AnalyzeRequest):
     """Analisa questão jurídica com Gemini"""
     start_time = time.time()
     
-    try:
-        model = genai.GenerativeModel('gemini-flash-latest')
-        
-        prompt = f"""
-        Você é um assistente jurídico especializado. Analise a seguinte pergunta legal:
-        
-        {request.question}
-        
-        Responda EXATAMENTE neste formato JSON:
-        {{
-            "domain": "Nome do domínio jurídico (ex: Direito de Família, Direito Penal, etc)",
-            "risk_level": "Baixo, Médio ou Alto",
-            "summary": "Resumo em 1-2 frases",
-            "answer": "Resposta detalhada",
-            "recommendations": ["Recomendação 1", "Recomendação 2", "Recomendação 3"],
-            "confidence_score": 0.85
-        }}
-        """
-        
-        response = model.generate_content(prompt)
-        result = json.loads(response.text)
-        
-        return {
-            "domain": result.get("domain", "Direito Geral"),
-            "risk_level": result.get("risk_level", "Médio"),
-            "analysis": {
-                "summary": result.get("summary", ""),
-                "answer": result.get("answer", ""),
-                "recommendations": result.get("recommendations", []),
-                "disclaimer": "Esta é uma análise baseada em IA. Não constitui aconselhamento jurídico profissional. Consulte um advogado qualificado.",
-                "confidence_score": result.get("confidence_score", 0.85)
-            },
-            "metadata": {
-                "processing_time_ms": int((time.time() - start_time) * 1000),
-                "model": "gemini-flash-latest",
-                "tokens_used": 150
+    max_retries = 3
+    retry_delay = 2  # segundos
+    
+    for attempt in range(max_retries):
+        try:
+            model = genai.GenerativeModel('gemini-flash-latest')
+            
+            prompt = f"""
+            Você é um assistente jurídico especializado. Analise a seguinte pergunta legal:
+            
+            {request.question}
+            
+            Responda EXATAMENTE neste formato JSON:
+            {{
+                "domain": "Nome do domínio jurídico",
+                "risk_level": "Baixo, Médio ou Alto",
+                "summary": "Resumo em 1-2 frases",
+                "answer": "Resposta detalhada",
+                "recommendations": ["Rec 1", "Rec 2", "Rec 3"],
+                "confidence_score": 0.85
+            }}
+            """
+            
+            response = model.generate_content(prompt)
+            result = json.loads(response.text)
+            
+            return {
+                "domain": result.get("domain", "Direito Geral"),
+                "risk_level": result.get("risk_level", "Médio"),
+                "analysis": {
+                    "summary": result.get("summary", ""),
+                    "answer": result.get("answer", ""),
+                    "recommendations": result.get("recommendations", []),
+                    "disclaimer": "Esta é uma análise baseada em IA. Não constitui aconselhamento jurídico profissional.",
+                    "confidence_score": result.get("confidence_score", 0.85)
+                },
+                "metadata": {
+                    "processing_time_ms": int((time.time() - start_time) * 1000),
+                    "model": "gemini-flash-latest",
+                    "tokens_used": 150
+                }
             }
-        }
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Erro ao processar resposta do modelo")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao processar: {str(e)}")
+            
+        except json.JSONDecodeError as e:
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+                continue
+            raise HTTPException(status_code=500, detail="Erro ao processar resposta")
+        except Exception as e:
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+                continue
+            raise HTTPException(status_code=500, detail=f"Erro: {str(e)}")
+    
+    raise HTTPException(status_code=500, detail="Máximo de tentativas atingido")
 
 @app.get("/")
 async def root():
