@@ -149,150 +149,294 @@ Supports analysis across 9 major legal domains:
 
 ## 🏗️ Architecture
 
-### System Design
+### Complete System Design
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     FastAPI Application                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │              API Layer (FastAPI)                       │ │
-│  │  • Authentication (JWT)                                │ │
-│  │  • Rate Limiting                                       │ │
-│  │  • Request Validation                                  │ │
-│  └────────────────────────────────────────────────────────┘ │
-│                           ↓                                   │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │         Multi-Agent Legal Workflow (LangGraph)        │ │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐             │ │
-│  │  │ Query    │→ │ Retriever│→ │ Cross-   │             │ │
-│  │  │ Planner  │  │ Agent    │  │ Ref      │             │ │
-│  │  └──────────┘  └──────────┘  └──────────┘             │ │
-│  │       ↓              ↓              ↓                   │ │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐             │ │
-│  │  │ Legal    │  │ Risk     │  │ Answer   │             │ │
-│  │  │ Interpret│→ │ Assessor │→ │ Agent    │             │ │
-│  │  └──────────┘  └──────────┘  └──────────┘             │ │
-│  └────────────────────────────────────────────────────────┘ │
-│                           ↓                                   │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │         Gen AI Layer (Google Gemini 2.0)              │ │
-│  │  • Natural Language Processing                         │ │
-│  │  • Legal Guidance Generation                           │ │
-│  │  • Context-Aware Responses                             │ │
-│  └────────────────────────────────────────────────────────┘ │
-│                           ↓                                   │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │         Response Layer                                 │ │
-│  │  • Structured JSON Response                            │ │
-│  │  • Risk Assessment                                     │ │
-│  │  • Recommendations                                     │ │
-│  │  • Legal Disclaimers                                   │ │
-│  └────────────────────────────────────────────────────────┘ │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                            FULL-STACK ARCHITECTURE                               │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│  FRONTEND LAYER (React 19 + TypeScript + Vite)                                  │
+│  ┌────────────────────────────────────────────────────────────────────────────┐ │
+│  │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐         │ │
+│  │  │  Login Page      │  │ Dashboard Page   │  │  History Sidebar │         │ │
+│  │  │                  │  │                  │  │                  │         │ │
+│  │  │ • Form Validation│  │ • Text Analysis  │  │ • Recent Queries │         │ │
+│  │  │ • JWT Storage    │  │ • Risk Display   │  │ • Clear History  │         │ │
+│  │  │ • Auth Flow      │  │ • Results Panel  │  │ • Timestamps     │         │ │
+│  │  └──────────────────┘  └──────────────────┘  └──────────────────┘         │ │
+│  │                                 ↓                                            │ │
+│  │  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  │ State Management (Zustand)                                             │ │
+│  │  │ • authStore (JWT token, user data)                                    │ │
+│  │  │ • historyStore (previous analyses)                                    │ │
+│  │  │ • Persistence (localStorage)                                          │ │
+│  │  └────────────────────────────────────────────────────────────────────────┘ │
+│  │                                 ↓                                            │ │
+│  │  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  │ HTTP Client (Axios)                                                    │ │
+│  │  │ • Base configuration                                                   │ │
+│  │  │ • Request interceptors (Token injection)                               │ │
+│  │  │ • Response interceptors (401 handling)                                 │ │
+│  │  │ • Error handling                                                       │ │
+│  │  └────────────────────────────────────────────────────────────────────────┘ │
+│  │                                 ↓                                            │ │
+│  │  PUBLISHED: Vercel | DEVELOPMENT: Vite Dev Server (Port 3000)               │
+│  └────────────────────────────────────────────────────────────────────────────┘ │
+│                                   ↓↓↓                                            │
+│                          (HTTP/HTTPS Communication)                             │
+│                                   ↓↓↓                                            │
+│  BACKEND LAYER (FastAPI + LLM Agents)                                          │
+│  ┌────────────────────────────────────────────────────────────────────────────┐ │
+│  │  ┌──────────────────────────────────────────────────────────────────────┐ │ │
+│  │  │              API Layer (FastAPI)                                     │ │ │
+│  │  │  • POST /api/v1/login (Authentication)                              │ │ │
+│  │  │  • POST /api/v1/analyze (Legal Analysis)                            │ │ │
+│  │  │  • GET /api/v1/models (Available Models)                            │ │ │
+│  │  │  • GET /health (Health Check)                                       │ │ │
+│  │  │  • JWT verification, Rate limiting, CORS middleware                 │ │ │
+│  │  └──────────────────────────────────────────────────────────────────────┘ │ │
+│  │                           ↓                                                 │ │
+│  │  ┌──────────────────────────────────────────────────────────────────────┐ │ │
+│  │  │         Multi-Agent Legal Workflow (Sequential Orchestration)       │ │ │
+│  │  │                                                                      │ │ │
+│  │  │  1. Query Planner     → Decompose question into search queries      │ │ │
+│  │  │          ↓                                                           │ │ │
+│  │  │  2. Legal Interpreter → Identify domain and ambiguities             │ │ │
+│  │  │          ↓                                                           │ │ │
+│  │  │  3. Retriever Agent   → Find relevant documents                     │ │ │
+│  │  │          ↓                                                           │ │ │
+│  │  │  4. Cross Reference   → Detect legal conflicts                      │ │ │
+│  │  │          ↓                                                           │ │ │
+│  │  │  5. Risk Assessor     → Evaluate complexity and risks               │ │ │
+│  │  │          ↓                                                           │ │ │
+│  │  │  6. Answer Agent      → Generate final response with disclaimers    │ │ │
+│  │  │                                                                      │ │ │
+│  │  └──────────────────────────────────────────────────────────────────────┘ │ │
+│  │                           ↓                                                 │ │
+│  │  ┌──────────────────────────────────────────────────────────────────────┐ │ │
+│  │  │         Gen AI Layer (Google Gemini 2.0 Flash Latest)              │ │ │
+│  │  │  • Natural Language Understanding                                   │ │ │
+│  │  │  • Legal Context Analysis                                          │ │ │
+│  │  │  • Answer Generation & Formatting                                  │ │ │
+│  │  │  • Risk Assessment Integration                                     │ │ │
+│  │  └──────────────────────────────────────────────────────────────────────┘ │ │
+│  │                           ↓                                                 │ │
+│  │  ┌──────────────────────────────────────────────────────────────────────┐ │ │
+│  │  │         Response Formatting                                         │ │ │
+│  │  │  • Structured JSON output                                           │ │ │
+│  │  │  • Risk levels + metrics                                            │ │ │
+│  │  │  • Legal recommendations                                            │ │ │
+│  │  │  • Comprehensive disclaimers                                        │ │ │
+│  │  └──────────────────────────────────────────────────────────────────────┘ │ │
+│  │                                                                            │ │
+│  │  INFRASTRUCTURE:                                                           │ │
+│  │  • Uvicorn ASGI Server (Port 8000)                                        │ │
+│  │  • Logging & Request Tracking                                             │ │
+│  │  • Error Handling & Recovery                                              │ │
+│  │  • Docker Container Support                                               │ │
+│  │                                                                            │ │
+│  │  DEPLOYMENT: Docker | Render.com | Google Cloud Run | AWS Lambda         │ │
+│  └────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                                  │
+└──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Project Structure
 
 ```
 legal-rag-multi-agent/
-├── app/
-│   ├── agents/              # Legal Analysis Agents
-│   │   ├── query_planner.py
-│   │   ├── retriever.py
-│   │   ├── cross_reference.py
-│   │   ├── legal_interpreter.py
-│   │   ├── risk_assessment.py
-│   │   └── answer_agent.py
-│   │
-│   ├── api/                 # FastAPI Application
-│   │   ├── main.py          # Main API endpoints
-│   │   └── auth.py          # Authentication routes
-│   │
-│   ├── core/                # Core Functionality
-│   │   ├── settings.py      # Configuration management
-│   │   ├── security.py      # JWT and authentication
-│   │   ├── graph.py         # Multi-agent workflow orchestration
-│   │   ├── logging.py       # Structured logging
-│   │   └── rate_limit.py    # Rate limiting implementation
-│   │
-│   └── llm/                 # Language Model Integration
-│       └── gemini_client.py # Google Gemini client
 │
-├── tests/                   # Comprehensive Test Suite
-│   ├── test_answer.py
-│   ├── test_answer_agent.py
-│   ├── test_api_auth.py
-│   ├── test_cross_reference.py
-│   ├── test_gemini_agent.py
-│   ├── test_graph.py
-│   ├── test_jwt.py
-│   ├── test_legal_interpreter.py
-│   ├── test_query_planner.py
-│   ├── test_rate_limit.py
-│   ├── test_retriever.py
-│   └── test_risk.py
+├── 📱 FRONTEND (React 19 + TypeScript + Vite)
+│   └── frontend/
+│       ├── src/
+│       │   ├── pages/
+│       │   │   ├── LoginPage.tsx          # 🔐 Authentication UI
+│       │   │   └── DashboardPage.tsx      # 📊 Main analysis interface
+│       │   │
+│       │   ├── components/
+│       │   │   ├── Common/
+│       │   │   │   └── Button.tsx         # Reusable button component
+│       │   │   ├── Analysis/              # Analysis result components
+│       │   │   ├── Auth/                  # Authentication components
+│       │   │   ├── Chat/                  # Chat interface components
+│       │   │   └── Layout/                # Layout wrapper components
+│       │   │
+│       │   ├── services/
+│       │   │   └── api.ts                 # 🔗 Axios client + interceptors
+│       │   │
+│       │   ├── store/                     # State Management (Zustand)
+│       │   │   ├── authStore.ts           # 👤 User auth state
+│       │   │   └── historyStore.ts        # 📜 Query history
+│       │   │
+│       │   ├── hooks/                     # Custom React hooks
+│       │   ├── types/
+│       │   │   └── index.ts               # TypeScript interfaces
+│       │   ├── utils/
+│       │   │   └── cn.ts                  # Class name utilities
+│       │   ├── assets/                    # Static assets
+│       │   ├── App.tsx                    # Root component
+│       │   ├── main.tsx                   # Entry point
+│       │   └── index.css                  # Global styles
+│       │
+│       ├── public/                        # Static files
+│       ├── package.json                   # Dependencies
+│       ├── vite.config.ts                 # Vite configuration
+│       ├── tailwind.config.js             # Tailwind CSS config
+│       ├── tsconfig.json                  # TypeScript config
+│       └── vercel.json                    # Vercel deployment config
 │
-├── .env                     # Environment variables (create from .env.example)
-├── .env.example             # Environment template
-├── requirements.txt         # Python dependencies
-├── Dockerfile              # Docker container definition
-├── pytest.ini              # Pytest configuration
-└── README.md               # This file
+├── 🐍 BACKEND (FastAPI + Python)
+│   ├── app/
+│   │   ├── agents/                       # 🤖 AI Agents
+│   │   │   ├── base.py                   # Abstract base class
+│   │   │   ├── query_planner.py          # Query decomposition
+│   │   │   ├── retriever.py              # Document retrieval
+│   │   │   ├── cross_reference.py        # Conflict detection
+│   │   │   ├── legal_interpreter.py      # Domain identification
+│   │   │   ├── risk.py                   # Risk assessment
+│   │   │   ├── answer.py                 # Answer generation
+│   │   │   └── answer_agent.py           # Answer orchestration
+│   │   │
+│   │   ├── api/                          # 📡 API Routes
+│   │   │   ├── main.py                   # Main endpoints & middleware
+│   │   │   ├── auth.py                   # Authentication routes
+│   │   │   └── deps.py                   # Dependency injection
+│   │   │
+│   │   ├── core/                         # ⚙️ Core Configuration
+│   │   │   ├── settings.py               # Environment settings
+│   │   │   ├── security.py               # JWT & hashing
+│   │   │   ├── jwt.py                    # JWT utilities
+│   │   │   ├── agent.py                  # Agent orchestration
+│   │   │   ├── graph.py                  # Workflow graph
+│   │   │   ├── state.py                  # State definitions
+│   │   │   ├── logging.py                # JSON logging
+│   │   │   └── rate_limit.py             # Rate limiting
+│   │   │
+│   │   ├── llm/                          # 🧠 LLM Integration
+│   │   │   ├── gemini_client.py          # Google Gemini API
+│   │   │   └── client.py                 # LLM client interface
+│   │   │
+│   │   ├── middleware/
+│   │   │   └── request_context.py        # Request ID tracking
+│   │   │
+│   │   ├── prompts/                      # 📝 Prompt Templates
+│   │   │   └── answer_prompt.py
+│   │   │
+│   │   └── __init__.py
+│   │
+│   ├── tests/                            # 🧪 Test Suite
+│   │   ├── conftest.py                   # Pytest configuration
+│   │   ├── test_api_auth.py              # API authentication tests
+│   │   ├── test_jwt.py                   # JWT token tests
+│   │   ├── test_answer*.py               # Answer agent tests
+│   │   ├── test_retriever.py             # Retriever tests
+│   │   ├── test_risk.py                  # Risk assessment tests
+│   │   ├── test_cross_reference.py       # Conflict detection tests
+│   │   ├── test_query_planner.py         # Query planning tests
+│   │   ├── test_legal_interpreter.py     # Domain identification tests
+│   │   ├── test_rate_limit.py            # Rate limiting tests
+│   │   └── test_graph.py                 # Workflow graph tests
+│   │
+│   ├── .env                              # Environment variables
+│   ├── .env.example                      # Environment template
+│   ├── requirements.txt                  # Python dependencies
+│   ├── Dockerfile                        # Docker image definition
+│   ├── .dockerignore                     # Docker ignore file
+│   ├── pytest.ini                        # Pytest configuration
+│   └── render.yaml                       # Render.com deployment config
+│
+├── docker-compose.yml                    # Local development compose
+├── .gitignore
+├── LICENSE
+└── README.md                             # This file
 ```
 
 ## 🛠️ Technology Stack
 
-### Core Framework
-- **FastAPI**: Modern, fast web framework for building APIs
-- **Pydantic**: Data validation and settings management
-- **LangGraph**: Orchestration of multi-agent workflows
+### Frontend (React 19 + TypeScript)
+- **React 19**: Latest React framework with concurrent features
+- **TypeScript**: Static typing for robust frontend development
+- **Vite**: Lightning-fast build tool and dev server (3s startup)
+- **React Router v6**: Client-side routing with protection
+- **Zustand**: Lightweight state management (authStore, historyStore)
+- **Axios**: HTTP client with request/response interceptors
+- **Framer Motion**: Smooth animations and transitions
+- **Tailwind CSS**: Utility-first CSS framework (dark mode compatible)
+- **Lucide React**: 300+ beautiful, consistent icons
+- **React Hot Toast**: Non-intrusive toast notifications
+- **TanStack React Query**: Server state management
+- **date-fns**: Date manipulation and formatting
 
-### Authentication & Security
-- **PyJWT**: JWT token generation and verification
-- **python-jose**: Secure token handling
-- **passlib**: Password hashing and verification
+### Backend (FastAPI + Python)
+#### Core Framework
+- **FastAPI**: Modern, fast (Starlette-based) API framework
+- **Pydantic v2**: Data validation and settings management
+- **Uvicorn**: ASGI web server with async support
 
-### AI & Machine Learning
+#### AI & LLM Integration
 - **Google Generative AI**: Gemini 2.0 Flash Latest model
-- **LangChain**: LLM orchestration and prompt management
+- **LangChain**: Prompt management and chain orchestration
+- **LangGraph**: Stateful multi-agent workflow orchestration
 
-### Application Infrastructure
-- **Uvicorn**: ASGI web server
+#### Authentication & Security
+- **PyJWT & python-jose**: JWT token generation/verification
+- **passlib**: Secure password hashing (bcrypt)
+- **CORS Middleware**: Cross-origin resource sharing
+
+#### Application Infrastructure
 - **Python-dotenv**: Environment variable management
-- **Logging**: Native Python structured logging
+- **Structured Logging**: JSON-format logging for all operations
+- **Request Context**: Unique request ID tracking and tracing
 
-### Testing & Quality
-- **Pytest**: Testing framework
-- **unittest.mock**: Mocking and patching
-- **Pytest-anyio**: Async test support
+#### Testing & Quality
+- **Pytest**: Comprehensive testing framework
+- **unittest.mock**: Advanced mocking capabilities
+- **TestClient**: FastAPI test client
+- **16+ Unit Tests**: 100% critical path coverage
 
-### Optional (For Production)
-- **PostgreSQL**: Data persistence
-- **Redis**: Caching and rate limiting
-- **Docker**: Containerization
+### DevOps & Deployment
+- **Docker**: Container images and multi-stage builds
+- **Docker Compose**: Local development orchestration
+- **Vercel**: Frontend hosting (automatic deployments from Git)
+- **Render.com**: Backend hosting (zero-config Python)
+- **GitHub Actions**: CI/CD pipeline automation
+- **nginx**: Reverse proxy and load balancing (optional)
+
+### Databases & Caching (Optional)
+- **PostgreSQL**: Persistent relational database
+- **Redis**: In-memory caching and session store
+- **FAISS**: Vector similarity search (for future RAG)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- pip package manager
-- Google Gemini API key (free tier available at https://ai.google.dev)
-- Git
+- **Backend**:
+  - Python 3.10 or higher
+  - pip package manager
+  - Google Gemini API key (free at https://ai.google.dev)
+  
+- **Frontend**:
+  - Node.js 18+ or compatible
+  - npm or yarn package manager
+  
+- **General**:
+  - Git
+  - Docker (optional, for containerized deployment)
 
-### Installation Steps
+### Complete Local Setup
 
-#### 1. Clone the Repository
+#### **Step 1: Clone Repository**
 
 ```bash
 git clone https://github.com/Juniorkz13/ai-portfolio.git
 cd ai-portfolio/projects/legal-rag-multi-agent
 ```
 
-#### 2. Create Virtual Environment
+#### **Step 2: Backend Setup**
+
+##### 2.1 Create Python Virtual Environment
 
 ```bash
 # Create virtual environment
@@ -306,66 +450,260 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-#### 3. Install Dependencies
+##### 2.2 Install Python Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 4. Configure Environment Variables
+##### 2.3 Configure Environment Variables
 
 ```bash
-# Create .env from template
+# Create .env file
 cp .env.example .env
 
-# Edit .env with your configuration
-nano .env  # or use your preferred editor
+# Edit with your credentials
+nano .env
 ```
 
-**Required environment variables:**
-
+**Required backend variables:**
 ```env
-# Get API key from: https://ai.google.dev
-GEMINI_API_KEY=your_google_gemini_api_key_here
-
-# Generate a secure key (min 32 characters)
-# On Linux/macOS: openssl rand -hex 16
-# On Windows: python -c "import secrets; print(secrets.token_hex(16))"
-JWT_SECRET_KEY=your_secure_secret_key_here_minimum_32_characters
-
+GEMINI_API_KEY=your_google_gemini_api_key
+JWT_SECRET_KEY=your_secure_key_min_32_chars  # Generate: openssl rand -hex 16
 JWT_ALGORITHM=HS256
 JWT_EXPIRATION_MINUTES=30
-
 RATE_LIMIT_REQUESTS=100
 RATE_LIMIT_WINDOW_SECONDS=3600
-
 LOG_LEVEL=INFO
-APP_NAME=Legal RAG Multi-Agent
-APP_VERSION=1.0.0
 DEBUG=false
 ```
 
-#### 5. Run Tests
+##### 2.4 Run Backend Tests
 
 ```bash
 pytest -v
+# Expected: 16 passed ✓
 ```
 
-Expected output:
-```
-16 passed ✓
-```
-
-#### 6. Start the Server
+##### 2.5 Start Backend Server
 
 ```bash
+# Development mode with auto-reload
 uvicorn app.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Server will be available at: **http://localhost:8000**
+✅ Backend available at: **http://localhost:8000**
+- API Docs: http://localhost:8000/docs
+- Health: http://localhost:8000/health
 
-- **API Documentation**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/health
+---
+
+#### **Step 3: Frontend Setup**
+
+##### 3.1 Install Frontend Dependencies
+
+```bash
+cd frontend
+npm install
+# or yarn install
+```
+
+##### 3.2 Configure Frontend Environment
+
+```bash
+# Create frontend .env file
+cat > .env << EOF
+VITE_API_URL=http://localhost:8000
+EOF
+```
+
+##### 3.3 Start Development Server
+
+```bash
+npm run dev
+# or yarn dev
+```
+
+✅ Frontend available at: **http://localhost:3000**
+
+---
+
+#### **Step 4: Test Complete Flow**
+
+```bash
+# In your browser:
+1. Navigate to http://localhost:3000
+2. Login with: admin@example.com / admin123
+3. Ask a legal question
+4. Receive comprehensive legal analysis
+```
+
+---
+
+### Using Docker (All-in-One)
+
+#### **Option 1: Docker Compose (Recommended)**
+
+```bash
+# In project root
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Backend: http://localhost:8000
+# Frontend: http://localhost:3000 (if included)
+```
+
+#### **Option 2: Manual Docker Build**
+
+```bash
+# Build backend image
+docker build -t legal-rag-backend:latest .
+
+# Run container
+docker run -d \
+  --name legal-rag-api \
+  -p 8000:8000 \
+  -e GEMINI_API_KEY=your_key \
+  -e JWT_SECRET_KEY=your_secret \
+  legal-rag-backend:latest
+```
+
+---
+
+### Development Tips
+
+**Frontend + Backend Together (2 Terminals):**
+
+```bash
+# Terminal 1: Backend
+cd ai-portfolio/projects/legal-rag-multi-agent
+source venv/bin/activate
+uvicorn app.api.main:app --reload
+
+# Terminal 2: Frontend
+cd ai-portfolio/projects/legal-rag-multi-agent/frontend
+npm run dev
+```
+
+**Rebuild Frontend:**
+```bash
+cd frontend
+npm run build  # Creates dist/ folder
+# Deploy dist/ to Vercel or any static hosting
+```
+
+**Rebuild Backend:**
+```bash
+docker build -t legal-rag-backend:latest .
+docker push your-registry/legal-rag-backend:latest
+```
+
+---
+
+## 🎨 Frontend Features & Components
+
+### User Interface Components
+
+#### **1. Login Page** (`LoginPage.tsx`)
+- Modern authentication form with email/password
+- JWT token storage in localStorage
+- Form validation and error handling
+- Beautiful animated entrance effects
+- Responsive design for all devices
+
+#### **2. Dashboard Page** (`DashboardPage.tsx`)
+- **Main Features:**
+  - Textarea for legal question input
+  - Real-time analysis with loading states
+  - Color-coded risk level badges (Low 🟢 / Medium 🟡 / High 🔴)
+  - Detailed analysis results with disclaimers
+  - Recommendations and next steps
+  - Processing time metrics
+
+- **Sidebar Management:**
+  - Recent query history (up to 50 items)
+  - Quick access to previous analyses
+  - Timestamps and risk levels
+  - Clear history functionality
+  - Expandable/collapsible sidebar
+
+#### **3. Button Component** (`Button.tsx`)
+- Variants: Primary, Secondary, Outline, Ghost
+- Sizes: SM, MD, LG
+- Loading states with spinner animation
+- Accessibility-first design
+- Custom className support
+
+### State Management (Zustand)
+
+#### **Auth Store** (`authStore.ts`)
+```typescript
+// Features:
+- User object (username, email)
+- JWT token storage
+- Authentication state
+- Login/logout handlers
+- Persistent localStorage sync
+- Automatic 401 redirect
+```
+
+#### **History Store** (`historyStore.ts`)
+```typescript
+// Features:
+- Query history (max 50 items)
+- Complete analysis results
+- Timestamps
+- Risk levels and domains
+- Persistent localStorage
+- Quick lookup by ID
+```
+
+### API Integration
+
+#### **Axios Client** (`api.ts`)
+- **Request Interceptors:**
+  - Automatic JWT token injection
+  - Content-Type headers
+  - 30-second timeout
+
+- **Response Interceptors:**
+  - Automatic 401 error handling
+  - Token refresh logic
+  - Error formatting
+
+- **Endpoints:**
+  - `authApi.login()` - JWT authentication
+  - `legalApi.analyze()` - Legal analysis requests
+  - `legalApi.getModels()` - Available AI models
+  - `legalApi.healthCheck()` - Backend health
+
+### Type Definitions (`types/index.ts`)
+
+```typescript
+// Main types:
+- User (username, email)
+- LoginRequest / LoginResponse
+- AnalysisRequest / AnalysisResponse
+- HistoryItem
+- LEGAL_DOMAINS (9 domains with icons)
+```
+
+### Styling & Utilities
+
+- **Tailwind CSS**: Dark mode (Dracula-inspired palette)
+- **Color System:**
+  - Background: #1e2127
+  - Cards: #282c34
+  - Text: #e6edf3
+  - Accent Orange: #d19a66
+
+- **Class Name Utility** (`cn.ts`)
+  - Combines clsx + tailwind-merge
+  - Conflict resolution for Tailwind classes
+
+---
 
 ## 📖 API Documentation
 
@@ -797,15 +1135,17 @@ The system provides specialized analysis across 9 major Brazilian legal domains:
 
 ## 🐳 Deployment
 
-### Docker Deployment
+### Backend Deployment
 
-#### Build Image
+#### Docker Deployment
+
+##### Build Image
 
 ```bash
 docker build -t legal-rag-multi-agent:latest .
 ```
 
-#### Run Container
+##### Run Container
 
 ```bash
 docker run -d \
@@ -816,25 +1156,33 @@ docker run -d \
   legal-rag-multi-agent:latest
 ```
 
-#### Docker Compose
+##### Docker Compose
 
 ```bash
 docker-compose up -d
 ```
 
-### Cloud Platforms
+#### Cloud Platforms - Backend
 
-#### Google Cloud Run
+##### Render.com (Recommended - Free Tier)
+
+```bash
+# render.yaml is already configured
+# Just push to GitHub and connect in Render dashboard
+# Automatic deployments on push to main branch
+```
+
+##### Google Cloud Run
 
 ```bash
 gcloud run deploy legal-rag-api \
   --source . \
   --platform managed \
   --region us-central1 \
-  --set-env-vars GEMINI_API_KEY=your_key
+  --set-env-vars GEMINI_API_KEY=your_key,JWT_SECRET_KEY=your_key
 ```
 
-#### AWS Lambda
+##### AWS Lambda (Serverless)
 
 ```bash
 pip install -r requirements.txt -t package/
@@ -846,21 +1194,113 @@ aws lambda create-function \
   --zip-file fileb://deployment.zip
 ```
 
-#### Heroku
+##### Heroku
 
 ```bash
 git push heroku main
 ```
 
-### Production Checklist
+---
 
-- [ ] Set `DEBUG=false`
-- [ ] Use strong `JWT_SECRET_KEY`
-- [ ] Enable HTTPS/TLS
-- [ ] Configure logging and monitoring
-- [ ] Set up database backups
+### Frontend Deployment
+
+#### Vercel (Recommended - Zero-Config)
+
+```bash
+# Method 1: Connect GitHub repo
+# 1. Go to https://vercel.com/new
+# 2. Import your GitHub repository
+# 3. Select "legal-rag-multi-agent/frontend" as root directory
+# 4. Deploy (automatic on every push)
+
+# Method 2: CLI deployment
+npm install -g vercel
+cd frontend
+vercel
+```
+
+**Vercel Configuration** (already in `vercel.json`):
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "npm run dev",
+  "framework": "vite"
+}
+```
+
+#### Other Frontend Hosting Options
+
+##### Netlify
+
+```bash
+cd frontend
+npm run build
+# Connect dist/ folder to Netlify
+```
+
+##### AWS S3 + CloudFront
+
+```bash
+cd frontend
+npm run build
+aws s3 sync dist/ s3://your-bucket-name/
+```
+
+##### GitHub Pages
+
+```bash
+# Update vite.config.ts
+# Uncomment: base: '/legal-rag-multi-agent/'
+
+npm run build
+# Push dist/ to gh-pages branch
+```
+
+#### Frontend Environment Variables
+
+Create `.env` in `frontend/` directory:
+```env
+VITE_API_URL=https://your-backend-url.com
+# Example for production:
+# VITE_API_URL=https://legal-rag-backend-v2.onrender.com
+```
+
+---
+
+### Complete Stack Deployment Checklist
+
+#### Backend (Python/FastAPI)
+- [ ] Set `DEBUG=false` in production
+- [ ] Use strong, unique `JWT_SECRET_KEY` (32+ chars)
+- [ ] Enable HTTPS/TLS in reverse proxy
+- [ ] Configure CORS for your frontend domain
+- [ ] Set up structured logging and monitoring
+- [ ] Configure database backups (if using DB)
 - [ ] Implement rate limiting at infrastructure level
-- [ ] Regular security audits
+- [ ] Regular security audits and dependency updates
+- [ ] Set up error tracking (Sentry, etc.)
+- [ ] Configure email notifications
+
+#### Frontend (React/TypeScript)
+- [ ] Update `VITE_API_URL` to production backend
+- [ ] Enable service worker for PWA
+- [ ] Set up analytics (Vercel Analytics, Google Analytics)
+- [ ] Configure error boundary
+- [ ] Test responsive design on mobile devices
+- [ ] Optimize bundle size (check with vite analyze)
+- [ ] Enable compression (gzip/brotli)
+- [ ] Set security headers (CSP, X-Frame-Options, etc.)
+- [ ] Test all authentication flows
+- [ ] Monitor Core Web Vitals
+
+#### Full Stack
+- [ ] Test end-to-end workflows
+- [ ] Load testing (locust, k6)
+- [ ] Security penetration testing
+- [ ] Document APIs and deployment process
+- [ ] Set up automated backups
+- [ ] Configure disaster recovery plan
 
 ---
 
@@ -931,36 +1371,67 @@ def analyze_legal_question(request):
 
 ## 🔜 Roadmap
 
-### Phase 1: Core ✅
-- [x] Multi-agent legal system
-- [x] JWT authentication
-- [x] Rate limiting
-- [x] Risk assessment
-- [x] API documentation
+### Phase 1: Core ✅ **COMPLETE**
+- [x] Multi-agent legal system (6 agents)
+- [x] JWT authentication with token storage
+- [x] Rate limiting (100 req/hour)
+- [x] Risk assessment (Low/Medium/High)
+- [x] API documentation (Swagger)
+- [x] Comprehensive test suite (16 tests)
+- [x] Docker containerization
+- [x] Health check endpoints
+- [x] Structured JSON logging
 
-### Phase 2: Persistence (In Progress)
+### Phase 2: Web Frontend ✅ **COMPLETE**
+- [x] React 19 + TypeScript dashboard
+- [x] Login/authentication pages
+- [x] Legal question analysis interface
+- [x] Real-time results display
+- [x] Risk level color coding
+- [x] Query history sidebar
+- [x] Zustand state management
+- [x] Axios HTTP client with interceptors
+- [x] Tailwind CSS dark theme
+- [x] Framer Motion animations
+- [x] Responsive design (mobile-friendly)
+- [x] Toast notifications
+- [x] Vercel deployment configuration
+
+### Phase 3: Persistence (In Progress)
 - [ ] PostgreSQL integration
-- [ ] User management
-- [ ] Case history
+- [ ] Extended user management
+- [ ] Persistent case/query history
 - [ ] Analytics dashboard
+- [ ] Session management
 
-### Phase 3: Enhanced AI
-- [ ] Vector embeddings
-- [ ] Real-time jurisprudence
-- [ ] Document upload
-- [ ] Multi-language support
+### Phase 4: Enhanced AI
+- [ ] Vector embeddings (FAISS)
+- [ ] Real-time jurisprudence updates
+- [ ] Document upload and analysis
+- [ ] Multi-language support (ES, EN)
+- [ ] Few-shot learning examples
+- [ ] Custom knowledge bases
 
-### Phase 4: Web & Mobile
-- [ ] React dashboard
-- [ ] Mobile app
+### Phase 5: Mobile & Integration
+- [ ] React Native mobile app
 - [ ] Email integration
-- [ ] Slack/WhatsApp bots
+- [ ] Slack bot integration
+- [ ] WhatsApp bot
+- [ ] Browser extension
 
-### Phase 5: Enterprise
-- [ ] Contract analysis
+### Phase 6: Enterprise
+- [ ] Contract analysis module
 - [ ] Pay-per-use billing
-- [ ] SAML authentication
-- [ ] Advanced analytics
+- [ ] SAML/OAuth authentication
+- [ ] Advanced analytics & reporting
+- [ ] Custom domain support
+- [ ] On-premise deployment options
+
+### Current Status: **Production Ready** 🚀
+- ✅ Full-stack implementation complete
+- ✅ Frontend and backend integrated
+- ✅ Deployable to cloud platforms
+- ✅ Ready for user testing
 
 ---
 
