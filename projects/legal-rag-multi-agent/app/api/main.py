@@ -114,7 +114,8 @@ async def analyze(request: AnalyzeRequest):
     start_time = time.time()
     
     try:
-        # Consulta Gemini
+        model = genai.GenerativeModel('gemini-flash-latest')
+        
         prompt = f"""
         Você é um assistente jurídico especializado. Analise a seguinte pergunta legal:
         
