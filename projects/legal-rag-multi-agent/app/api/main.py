@@ -50,18 +50,6 @@ async def allow_preflight(request: Request, call_next):
 # Include routers
 app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
 
-# ========== ADICIONAR ENDPOINT OPTIONS PARA DEBUG ==========
-@app.options("/api/v1/login")
-async def options_login():
-    """Handle preflight OPTIONS request"""
-    return {"message": "OK"}
-
-@app.options("/api/v1/analyze")
-async def options_analyze():
-    """Handle preflight OPTIONS request"""
-    return {"message": "OK"}
-# ============================================================
-
 workflow = LegalRAGWorkflow()
 
 # Dependencies
