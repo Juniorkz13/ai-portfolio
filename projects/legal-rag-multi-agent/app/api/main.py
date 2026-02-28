@@ -75,7 +75,8 @@ def verify_bearer_token(credentials: HTTPAuthorizationCredentials = Depends(secu
         raise HTTPException(status_code=401, detail="Not authenticated")
 
 @app.middleware("http")
- async def auth_middleware(request: Request, call_next):
+async def auth_middleware(request: Request, call_next):
+    """Middleware de autenticação"""
     if request.method == "OPTIONS":
         return await call_next(request)
 
