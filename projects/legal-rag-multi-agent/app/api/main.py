@@ -23,6 +23,10 @@ class AnalyzeRequest(BaseModel):
     question: str
     documents: Optional[list] = None
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
 # FastAPI instance
 app = FastAPI(
     title="Legal RAG Multi-Agent API",
@@ -157,9 +161,10 @@ async def health():
     return {"status": "ok"}
 
 @app.post("/api/v1/login")
-async def login(username: str, password: str):
-    if username == "admin@example.com" and password == "admin123":
-        token = create_access_token(data={"sub": username})
+async def login(request: LoginRequest):
+    """Login endpoint"""
+    if request.username == "admin@example.com" and request.password == "admin123":
+        token = create_access_token(data={"sub": request.username})
         return {"access_token": token, "token_type": "bearer"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
