@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import timedelta
 import uuid
+import jwt
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
@@ -60,21 +61,21 @@ def verify_api_key(x_api_key: str = Depends(api_key_header)):
         )
     return x_api_key
 
-def verify_bearer_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Verifica token JWT"""
+def verify_bearer_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
+    """Verifica e extrai token JWT do header"""
     token = credentials.credentials
-    username = verify_token(token)
-    
-    if not username:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
-        )
-    
-    return username
+    try:
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return username
+    except Exception as e:
+        logger.error(f"[VERIFY_TOKEN] Error: {str(e)}")
+        raise HTTPException(status_code=401, detail="Not authenticated")
 
 @app.middleware("http")
-async def auth_middleware(request: Request, call_next):
+ async def auth_middleware(request: Request, call_next):
     if request.method == "OPTIONS":
         return await call_next(request)
 
