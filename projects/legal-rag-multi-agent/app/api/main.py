@@ -7,6 +7,7 @@ from datetime import timedelta
 import uuid
 import jwt
 import time
+import json
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
@@ -121,37 +122,38 @@ async def analyze(request: AnalyzeRequest):
         
         {request.question}
         
-        Forneça uma análise estruturada com:
-        1. Resumo (1-2 frases)
-        2. Resposta detalhada
-        3. Recomendações (3 itens)
-        4. Avaliação de risco (Baixo/Médio/Alto)
-        5. Domínio jurídico
+        Responda EXATAMENTE neste formato JSON:
+        {{
+            "domain": "Nome do domínio jurídico (ex: Direito de Família, Direito Penal, etc)",
+            "risk_level": "Baixo, Médio ou Alto",
+            "summary": "Resumo em 1-2 frases",
+            "answer": "Resposta detalhada",
+            "recommendations": ["Recomendação 1", "Recomendação 2", "Recomendação 3"],
+            "confidence_score": 0.85
+        }}
         """
         
         response = model.generate_content(prompt)
-        answer = response.text
+        result = json.loads(response.text)
         
         return {
-            "domain": "Direito do Consumidor",
-            "risk_level": "Baixo",
+            "domain": result.get("domain", "Direito Geral"),
+            "risk_level": result.get("risk_level", "Médio"),
             "analysis": {
-                "summary": "Você possui direitos de arrependimento em compras.",
-                "answer": answer,
-                "recommendations": [
-                    "Verifique o prazo de arrependimento (geralmente 7 dias)",
-                    "Solicite devolução formal por escrito",
-                    "Mantenha comprovante de compra"
-                ],
-                "disclaimer": "Esta é uma análise baseada em IA. Não constitui aconselhamento jurídico profissional.",
-                "confidence_score": 0.92
+                "summary": result.get("summary", ""),
+                "answer": result.get("answer", ""),
+                "recommendations": result.get("recommendations", []),
+                "disclaimer": "Esta é uma análise baseada em IA. Não constitui aconselhamento jurídico profissional. Consulte um advogado qualificado.",
+                "confidence_score": result.get("confidence_score", 0.85)
             },
             "metadata": {
                 "processing_time_ms": int((time.time() - start_time) * 1000),
-                "model": "gemini-pro",
+                "model": "gemini-flash-latest",
                 "tokens_used": 150
             }
         }
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Erro ao processar resposta do modelo")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar: {str(e)}")
 
