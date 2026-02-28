@@ -12,7 +12,6 @@ from app.core.rate_limit import rate_limiter
 from app.core.logging import get_logger
 from app.core.graph import LegalRAGWorkflow
 from app.api.auth import router as auth_router
-from app.llm.gemini_client import list_available_models
 
 logger = get_logger(__name__)
 
@@ -49,7 +48,7 @@ async def allow_preflight(request: Request, call_next):
     return await call_next(request)
 
 # Include routers
-app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
+app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
 
 # ========== ADICIONAR ENDPOINT OPTIONS PARA DEBUG ==========
 @app.options("/api/v1/login")
