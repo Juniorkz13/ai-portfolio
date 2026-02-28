@@ -5,7 +5,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import timedelta
 import uuid
-from fastapi.openapi.utils import get_openapi_tags
+# REMOVER ESTA LINHA:
+# from fastapi.openapi.utils import get_openapi_tags
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
