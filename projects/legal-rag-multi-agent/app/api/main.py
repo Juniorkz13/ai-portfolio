@@ -113,11 +113,18 @@ async def analyze(request: AnalyzeRequest):
     start_time = time.time()
     
     return {
+        "domain": "Direito Civil",
+        "risk_level": "Médio",
         "analysis": {
             "summary": f"Análise de: {request.question}",
-            "details": "Detalhes da análise jurídica",
-            "sources": [],
-            "confidence": 0.95
+            "answer": "Detalhes completos da análise jurídica sobre seu caso.",
+            "recommendations": [
+                "Consulte um advogado especializado",
+                "Documente todas as evidências",
+                "Mantenha registros de comunicações"
+            ],
+            "disclaimer": "Esta é uma análise baseada em IA. Não constitui aconselhamento jurídico profissional. Consulte um advogado qualificado.",
+            "confidence_score": 0.92
         },
         "metadata": {
             "processing_time_ms": int((time.time() - start_time) * 1000),
