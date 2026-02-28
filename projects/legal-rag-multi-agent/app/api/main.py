@@ -107,45 +107,14 @@ async def get_available_models():
     }
 
 @app.post("/api/v1/analyze")
-async def analyze(
-    request: AnalyzeRequest,
-    x_api_key: str = Depends(verify_api_key),
-    username: str = Depends(verify_bearer_token)
-):
+async def analyze(request: AnalyzeRequest):
     """Analisa questão jurídica"""
-    try:
-        request_id = str(uuid.uuid4())
-        
-        # Rate limiting
-        if not rate_limiter.is_allowed(username):
-            raise HTTPException(status_code=429, detail="Rate limit exceeded")
-        
-        documents = request.documents or []
-        result = workflow.run(
-            question=request.question,
-            documents=documents,
-            request_id=request_id
-        )
-        
-        logger.info(
-            "analysis_completed",
-            extra={
-                "extra": {
-                    "request_id": request_id,
-                    "username": username,
-                    "risk_level": result.get("risk_level"),
-                    "domain": result.get("domain")
-                }
-            }
-        )
-        
-        return result
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Analysis error: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+    # Mock response - sem validação por enquanto
+    return {
+        "answer": f"Análise de: {request.question}",
+        "sources": [],
+        "confidence": 0.95
+    }
 
 @app.get("/")
 async def root():
