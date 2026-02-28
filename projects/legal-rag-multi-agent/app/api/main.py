@@ -34,13 +34,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS PRIMEIRO
+# CORS MIDDLEWARE
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permite OPTIONS
+    allow_headers=["*"],  # Permite todos os headers
 )
 
 # INCLUDE ROUTER SEGUNDO (antes de qualquer validação global)
