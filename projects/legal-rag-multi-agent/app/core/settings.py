@@ -37,8 +37,7 @@ class Settings(BaseSettings):
     app_version: str = Field(default="1.0.0", validation_alias="APP_VERSION")
     debug: bool = Field(default=False, validation_alias="DEBUG")
 
-def get_settings() -> Settings:
-    """Retorna instância de Settings"""
-    return Settings()
+class Config:
+    env_file = ".env"
 
-settings = get_settings()
+settings = Settings()
