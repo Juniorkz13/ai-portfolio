@@ -4,20 +4,19 @@ import type { LoginRequest, LoginResponse, AnalysisRequest, AnalysisResponse } f
 const API_BASE_URL = "https://legal-rag-backend-v2.onrender.com";
 console.log('[API_URL]', API_BASE_URL);
 
-if (!API_BASE_URL) {
-  throw new Error('VITE_API_URL não definida no build da Vercel');
-}
-
 const API_URL = API_BASE_URL.replace(/\/$/, '');
+
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
   timeout: 30000,
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Interceptor para adicionar token em TODAS as requisições
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
+    console.log('[REQUEST] Token:', token ? 'presente' : 'ausente');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,6 +29,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      console.log('[AUTH] Token inválido, limpando...');
       localStorage.removeItem('access_token');
       window.location.href = '/login';
     }
@@ -40,11 +40,17 @@ api.interceptors.response.use(
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
     const { data } = await api.post<LoginResponse>('/login', credentials);
+    // Salva token após login
+    if (data.access_token) {
+      localStorage.setItem('access_token', data.access_token);
+      console.log('[LOGIN] Token salvo');
+    }
     return data;
   },
   
   logout: () => {
     localStorage.removeItem('access_token');
+    console.log('[LOGOUT] Token removido');
   },
 };
 
