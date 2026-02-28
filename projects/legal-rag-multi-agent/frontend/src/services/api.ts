@@ -56,6 +56,8 @@ export const authApi = {
 
 export const legalApi = {
   analyze: async (request: AnalysisRequest): Promise<AnalysisResponse> => {
+    const token = localStorage.getItem('access_token');
+    console.log('[ANALYZE] Token antes da request:', token ? `${token.substring(0, 20)}...` : 'NENHUM');
     const { data } = await api.post<AnalysisResponse>('/analyze', request);
     return data;
   },
