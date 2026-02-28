@@ -5,8 +5,6 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import timedelta
 import uuid
-# REMOVER ESTA LINHA:
-# from fastapi.openapi.utils import get_openapi_tags
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
@@ -36,11 +34,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://ai-portfolio-beta-cyan.vercel.app",
-        "http://localhost:5173",
-    ],
-    allow_origin_regex=r"^https://.*\.vercel\.app$",
+    allow_origins=["*"],  # Permissivo (ajuste depois)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
