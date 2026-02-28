@@ -1,14 +1,14 @@
 import axios from 'axios';
 import type { LoginRequest, LoginResponse, AnalysisRequest, AnalysisResponse } from '@/types';
 
-const RAW = import.meta.env.VITE_API_URL;
-console.log('[API_URL]', RAW);
+const API_BASE_URL = "https://legal-rag-backend-v2.onrender.com";
+console.log('[API_URL]', API_BASE_URL);
 
-if (!RAW) {
+if (!API_BASE_URL) {
   throw new Error('VITE_API_URL não definida no build da Vercel');
 }
 
-const API_URL = RAW.replace(/\/$/, '');
+const API_URL = API_BASE_URL.replace(/\/$/, '');
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
   timeout: 30000,
@@ -39,7 +39,7 @@ api.interceptors.response.use(
 
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const { data } = await api.post<LoginResponse>('/api/v1/login', credentials);
+    const { data } = await api.post<LoginResponse>('/login', credentials);
     return data;
   },
   
@@ -50,12 +50,12 @@ export const authApi = {
 
 export const legalApi = {
   analyze: async (request: AnalysisRequest): Promise<AnalysisResponse> => {
-    const { data } = await api.post<AnalysisResponse>('/api/v1/analyze', request);
+    const { data } = await api.post<AnalysisResponse>('/analyze', request);
     return data;
   },
 
   getModels: async () => {
-    const { data } = await api.get('/api/v1/models');
+    const { data } = await api.get('/models');
     return data;
   },
 
