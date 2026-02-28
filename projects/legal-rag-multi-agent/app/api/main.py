@@ -109,11 +109,13 @@ async def get_available_models():
 @app.post("/api/v1/analyze")
 async def analyze(request: AnalyzeRequest):
     """Analisa questão jurídica"""
-    # Mock response - sem validação por enquanto
     return {
-        "answer": f"Análise de: {request.question}",
-        "sources": [],
-        "confidence": 0.95
+        "analysis": {
+            "summary": f"Análise de: {request.question}",
+            "details": "Detalhes da análise",
+            "sources": [],
+            "confidence": 0.95
+        }
     }
 
 @app.get("/")
