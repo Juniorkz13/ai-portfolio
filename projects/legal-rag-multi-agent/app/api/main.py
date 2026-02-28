@@ -31,7 +31,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS DEVE SER O PRIMEIRO MIDDLEWARE
+# CORS PRIMEIRO
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -40,17 +40,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Middleware para liberar OPTIONS
-@app.middleware("http")
-async def allow_preflight(request: Request, call_next):
-    if request.method == "OPTIONS":
-        return await call_next(request)
-    return await call_next(request)
-
-# Include routers
+# INCLUDE ROUTER SEGUNDO (antes de qualquer validação global)
 app.include_router(auth_router, prefix="/api/v1", tags=["auth"])
 
-workflow = LegalRAGWorkflow()
+# Security schemes (DEPOIS)
+security = HTTPBearer()
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
 
 # Dependencies
 def verify_api_key(x_api_key: str = Depends(api_key_header)):
