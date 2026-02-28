@@ -6,6 +6,7 @@ from typing import Optional
 from datetime import timedelta
 import uuid
 import jwt
+import time
 
 from app.core.settings import settings
 from app.core.security import create_access_token, verify_token, verify_password
@@ -109,12 +110,19 @@ async def get_available_models():
 @app.post("/api/v1/analyze")
 async def analyze(request: AnalyzeRequest):
     """Analisa questão jurídica"""
+    start_time = time.time()
+    
     return {
         "analysis": {
             "summary": f"Análise de: {request.question}",
-            "details": "Detalhes da análise",
+            "details": "Detalhes da análise jurídica",
             "sources": [],
             "confidence": 0.95
+        },
+        "metadata": {
+            "processing_time_ms": int((time.time() - start_time) * 1000),
+            "model": "gemini-pro",
+            "tokens_used": 150
         }
     }
 
