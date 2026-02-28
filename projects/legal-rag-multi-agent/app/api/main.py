@@ -32,9 +32,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# CORS DEVE SER O PRIMEIRO MIDDLEWARE
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permissivo (ajuste depois)
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
