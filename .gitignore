@@ -301,5 +301,6 @@ uploads/
 # ==========================================
 projects/computer-vision-quality-inspection/experiments/predictions/
 # ==========================================
-# RAG Architecture Project
+# technical-norms-rag
 storage/pdfs/
+**/project-spec.md
