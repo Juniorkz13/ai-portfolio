@@ -179,7 +179,7 @@ Testing - Pytest
 ### 1. Clone the repository
 
 git clone `<repository-url>`{=html}\
-cd rag-architecture-ai
+cd technical-norms-rag
 
 ### 2. Install dependencies
 
