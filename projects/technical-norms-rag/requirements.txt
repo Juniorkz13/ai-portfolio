@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg[binary]
+pydantic-settings
+python-multipart
+pymupdf
+pytest
+pgvector
+google-generativeai
+requests
+streamlit
