@@ -135,7 +135,6 @@ pip-delete-this-directory.txt
 *.sqlite
 *.sqlite3
 db.sqlite3
-*.sql
 data/
 *.dump
 
@@ -301,3 +300,6 @@ uploads/
 !LICENSE
 # ==========================================
 projects/computer-vision-quality-inspection/experiments/predictions/
+# ==========================================
+# RAG Architecture Project
+storage/pdfs/
