@@ -254,8 +254,10 @@ projects/legal-rag-multi-agent/*.db
 # Documentation builds
 # ==========================================
 docs/_build/
+docs/
 site/
 .readthedocs.yml
+.codex/
 
 # Static files
 # ==========================================
@@ -304,3 +306,7 @@ projects/computer-vision-quality-inspection/experiments/predictions/
 # technical-norms-rag
 storage/pdfs/
 **/project-spec.md
+# ==========================================
+PROJECT_CONTEXT.md
+STRUCTURE.md
+# ==========================================
