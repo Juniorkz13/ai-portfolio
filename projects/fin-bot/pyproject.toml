@@ -1,0 +1,42 @@
+[project]
+name = "fin-bot"
+version = "0.1.0"
+description = "Backend do FinBot com FastAPI, SQLAlchemy e integracao com Telegram."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.116.0,<1.0.0",
+    "uvicorn[standard]>=0.35.0,<1.0.0",
+    "sqlalchemy>=2.0.39,<3.0.0",
+    "psycopg[binary]>=3.2.6,<4.0.0",
+    "pydantic>=2.11.0,<3.0.0",
+    "python-multipart>=0.0.20,<1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5,<9.0.0",
+    "httpx>=0.28.1,<1.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+    "app",
+    "app.agents",
+    "app.api",
+    "app.core",
+    "app.db",
+    "app.models",
+    "app.schemas",
+    "app.services",
+    "app.tools",
+    "bot",
+    "bot.telegram",
+]
+
+[tool.setuptools.package-dir]
+app = "backend/app"
+bot = "bot"

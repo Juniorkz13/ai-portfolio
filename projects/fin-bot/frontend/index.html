@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinBot</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">FinBot Web</p>
+          <h1>Controle financeiro simples, direto e sem atrito.</h1>
+          <p class="hero-text">
+            Consulte seu resumo do mês, acompanhe transações recentes e registre
+            novas movimentações manualmente.
+          </p>
+        </div>
+        <div class="hero-card">
+          <label class="field-label" for="user-name">Nome</label>
+          <input id="user-name" type="text" placeholder="Nome do usuário" />
+          <label class="field-label" for="user-id">X-User-Id</label>
+          <input id="user-id" type="text" placeholder="UUID do usuário" />
+          <label class="field-label" for="telegram-id">Telegram ID</label>
+          <input id="telegram-id" type="text" placeholder="ID do Telegram" />
+          <p class="hint">
+            Você pode criar um usuário web simples, informar um UUID existente
+            ou resolver o usuário pelo Telegram ID. Os valores ficam salvos no
+            navegador para facilitar o uso local.
+          </p>
+          <div class="hero-actions">
+            <button id="create-user" type="button">Criar usuário web</button>
+            <button id="save-user-id" class="secondary-button" type="button">
+              Salvar identificação
+            </button>
+            <button id="resolve-telegram-user" type="button">
+              Usar Telegram ID
+            </button>
+            <button id="generate-link-code" type="button">
+              Gerar código de vínculo
+            </button>
+          </div>
+          <p id="current-user-status" class="status-text"></p>
+          <div id="telegram-link-box" class="link-code-box"></div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="panel summary-panel">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Resumo mensal</p>
+              <h2>Mês atual</h2>
+            </div>
+            <div class="summary-controls">
+              <select id="summary-month" aria-label="Mês"></select>
+              <select id="summary-year" aria-label="Ano"></select>
+              <button id="refresh-summary" type="button">Atualizar</button>
+            </div>
+          </div>
+          <div id="summary-grid" class="summary-grid">
+            <article class="metric-card">
+              <span>Receitas</span>
+              <strong id="summary-income">R$ 0,00</strong>
+            </article>
+            <article class="metric-card">
+              <span>Despesas</span>
+              <strong id="summary-expenses">R$ 0,00</strong>
+            </article>
+            <article class="metric-card">
+              <span>Saldo</span>
+              <strong id="summary-balance">R$ 0,00</strong>
+            </article>
+          </div>
+          <div class="chart-grid">
+            <section class="chart-card">
+              <div class="category-header">
+                <h3>Receitas vs despesas</h3>
+              </div>
+              <div id="balance-chart" class="stack-chart" aria-label="Grafico de receitas e despesas"></div>
+              <div class="chart-legend">
+                <span><i class="legend-dot income-dot"></i>Receitas</span>
+                <span><i class="legend-dot expense-dot"></i>Despesas</span>
+              </div>
+            </section>
+
+            <section class="chart-card">
+              <div class="category-header">
+                <h3>Gastos por categoria</h3>
+              </div>
+              <div id="category-chart" class="bar-chart" aria-label="Grafico de gastos por categoria"></div>
+            </section>
+          </div>
+          <div class="category-block">
+            <div class="category-header">
+              <h3>Despesas por categoria</h3>
+              <span id="summary-status" class="status-text"></span>
+            </div>
+            <ul id="category-list" class="category-list"></ul>
+          </div>
+          <div class="insights-block">
+            <div class="category-header">
+              <h3>Insights automáticos</h3>
+            </div>
+            <ul id="insights-list" class="insights-list"></ul>
+          </div>
+        </section>
+
+        <section class="layout-row">
+          <section class="panel form-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Nova transação</p>
+                <h2>Registro manual</h2>
+              </div>
+            </div>
+
+            <form id="transaction-form" class="transaction-form">
+              <div class="form-grid">
+                <label>
+                  <span>Tipo</span>
+                  <select id="transaction-type" name="type">
+                    <option value="expense">Despesa</option>
+                    <option value="income">Receita</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Valor</span>
+                  <input
+                    id="transaction-amount"
+                    name="amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0,00"
+                    required
+                  />
+                </label>
+
+                <label>
+                  <span>Categoria</span>
+                  <input
+                    id="transaction-category"
+                    name="category"
+                    type="text"
+                    list="category-options"
+                    placeholder="alimentação, salário..."
+                    required
+                  />
+                  <datalist id="category-options"></datalist>
+                </label>
+
+                <label>
+                  <span>Data</span>
+                  <input id="transaction-date" name="date" type="date" required />
+                </label>
+              </div>
+
+              <label>
+                <span>Descrição</span>
+                <input
+                  id="transaction-description"
+                  name="description"
+                  type="text"
+                  placeholder="Ex.: almoço, Uber, salário"
+                />
+              </label>
+
+              <div class="form-footer">
+                <button id="submit-transaction" type="submit">Salvar transação</button>
+                <span id="form-status" class="status-text"></span>
+              </div>
+            </form>
+
+            <div class="import-divider"></div>
+
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Importação</p>
+                <h2>Upload de CSV</h2>
+              </div>
+            </div>
+
+            <form id="csv-import-form" class="transaction-form">
+              <label>
+                <span>Arquivo CSV</span>
+                <input id="csv-file" name="file" type="file" accept=".csv,text/csv" required />
+              </label>
+
+              <p class="hint">
+                Colunas esperadas: <code>type</code>, <code>amount</code>,
+                <code>category</code>, <code>description</code>, <code>date</code>.
+              </p>
+
+              <div class="form-footer">
+                <button id="submit-csv-import" type="submit">Importar CSV</button>
+                <span id="csv-import-status" class="status-text"></span>
+              </div>
+              <ul id="csv-import-results" class="import-results"></ul>
+            </form>
+          </section>
+
+          <section class="panel list-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-kicker">Histórico</p>
+                <h2>Transações recentes</h2>
+              </div>
+              <div class="list-controls">
+                <select id="recent-limit" aria-label="Limite">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                </select>
+                <button id="refresh-transactions" type="button">Atualizar</button>
+              </div>
+            </div>
+            <ul id="transaction-list" class="transaction-list"></ul>
+            <span id="transactions-status" class="status-text"></span>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
