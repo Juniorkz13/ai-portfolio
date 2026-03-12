@@ -178,7 +178,7 @@ Run tests with:
 
 ## Clone repository
 
-    git clone https://github.com/YOUR_USERNAME/fin-bot.git
+    git clone https://github.com/Juniorkz13/fin-bot.git
     cd fin-bot
 
 ## Create environment
